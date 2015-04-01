@@ -128,7 +128,13 @@ total 67432
 くろしお出版
 ISBN978-4-87424-498-2</code></pre>
 <p>corpora/CEEAUS 以下に「言語研究のための統計入門」付属CD-ROMのデータの&quot;INDIVIDUAL WRITERS&quot;以下のフォルダー（&quot;INDIVIDUAL WRITERS&quot;は含まない）を、また、&quot;PLAIN&quot;以下のフォルダー（&quot;PLAIN&quot;を含む）をコピーしてください。コピー後、次のようになっていることを確認してください。</p>
-<pre class="shell"><code>$ find corpora/CEEAUS -type d
+<pre class="shell"><code># ディレクトリの作成
+$ mkdir -p corpora/CEEAUS
+
+# ここで CD-ROM をコピー
+
+# コピー内容の確認
+$ find corpora/CEEAUS -type d
 corpora/CEEAUS
 corpora/CEEAUS/CEECUS
 corpora/CEEAUS/CEEJUS
@@ -440,24 +446,7 @@ To shutdown the server, access this URL -&gt; http://localhost:6574/shutdown</co
 <span class="kw">val</span> index = <span class="st">&quot;/tmp/index-ceeaus-all&quot;</span>
 
 <span class="co">// (2)</span>
-<span class="kw">def</span> <span class="fu">schema</span>(): Schema = {
-  <span class="kw">val</span> analyzerEn = <span class="fu">Analyzer</span>(<span class="kw">new</span> org.<span class="fu">apache</span>.<span class="fu">lucene</span>.<span class="fu">analysis</span>.<span class="fu">standard</span>.<span class="fu">StandardAnalyzer</span>(<span class="kw">null</span>.<span class="fu">asInstanceOf</span>[org.<span class="fu">apache</span>.<span class="fu">lucene</span>.<span class="fu">analysis</span>.<span class="fu">util</span>.<span class="fu">CharArraySet</span>]))
-  <span class="kw">val</span> builder = <span class="fu">AnalyzerBuilder</span>()
-  builder.<span class="fu">withTokenizer</span>(<span class="st">&quot;whitespace&quot;</span>)
-  builder.<span class="fu">addTokenFilter</span>(<span class="st">&quot;lowerCase&quot;</span>)
-  <span class="kw">val</span> analyzerWs = builder.<span class="fu">build</span>
-  <span class="kw">val</span> analyzerJa = <span class="fu">Analyzer</span>(<span class="kw">new</span> org.<span class="fu">apache</span>.<span class="fu">lucene</span>.<span class="fu">analysis</span>.<span class="fu">ja</span>.<span class="fu">JapaneseAnalyzer</span>())
-  <span class="kw">val</span> fieldTypes = Map(
-    <span class="st">&quot;file&quot;</span> -&gt; <span class="fu">FieldType</span>(<span class="kw">null</span>, <span class="kw">true</span>, <span class="kw">true</span>),
-    <span class="st">&quot;type&quot;</span> -&gt; <span class="fu">FieldType</span>(<span class="kw">null</span>, <span class="kw">true</span>, <span class="kw">true</span>),
-    <span class="st">&quot;cat&quot;</span> -&gt; <span class="fu">FieldType</span>(<span class="kw">null</span>, <span class="kw">true</span>, <span class="kw">true</span>),
-    <span class="st">&quot;body_en&quot;</span> -&gt; <span class="fu">FieldType</span>(analyzerEn, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>),   <span class="co">// set termVectors and termPositions to true</span>
-    <span class="st">&quot;body_ws&quot;</span> -&gt; <span class="fu">FieldType</span>(analyzerWs, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>),   <span class="co">// set termVectors and termPositions to true</span>
-    <span class="st">&quot;body_ja&quot;</span> -&gt; <span class="fu">FieldType</span>(analyzerJa, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>)    <span class="co">// set termVectors and termPositions to true</span>
-  )
-  <span class="kw">val</span> analyzerDefault = <span class="fu">Analyzer</span>(<span class="kw">new</span> org.<span class="fu">apache</span>.<span class="fu">lucene</span>.<span class="fu">analysis</span>.<span class="fu">standard</span>.<span class="fu">StandardAnalyzer</span>())
-  Schema(analyzerDefault, fieldTypes)
-}
+<span class="kw">val</span> schema = SchemaLoader.<span class="fu">load</span>(<span class="st">&quot;examples/schema/ceeaus.conf&quot;</span>)
 
 <span class="co">// (3)</span>
 <span class="kw">val</span> reader = <span class="fu">IReader</span>(index, <span class="fu">schema</span>())</code></pre>
@@ -547,29 +536,73 @@ CEENAS  0.433   0.886   1.000</code></pre>
 <span class="kw">val</span> wcCUS = WordCounts.<span class="fu">count</span>(reader, <span class="st">&quot;body_ws&quot;</span>, words.<span class="fu">toSet</span>, docSetCUS)
 <span class="kw">val</span> wcNAS = WordCounts.<span class="fu">count</span>(reader, <span class="st">&quot;body_ws&quot;</span>, words.<span class="fu">toSet</span>, docSetNAS)</code></pre>
 <p>ここで注目していただきたいのが対象フィールドにbody_wsを指定している点です。前述の仮説検定ではbody_enフィールドを対象にしていました。</p>
-<p>スキーマ設定を見ると、body_enはLuceneのStandardAnalyzerを使って作成したanalyzerEnを(7)、body_wsはLuceneのWhitespaceTokenizerにLowerCaseFilterを組み合わせて作成したanalyzerWsを(8)使って単語分割されています。</p>
-<pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">def</span> <span class="fu">schema</span>(): Schema = {
-  <span class="co">// (7)</span>
-  <span class="kw">val</span> analyzerEn = <span class="fu">Analyzer</span>(<span class="kw">new</span> org.<span class="fu">apache</span>.<span class="fu">lucene</span>.<span class="fu">analysis</span>.<span class="fu">standard</span>.<span class="fu">StandardAnalyzer</span>(<span class="kw">null</span>.<span class="fu">asInstanceOf</span>[org.<span class="fu">apache</span>.<span class="fu">lucene</span>.<span class="fu">analysis</span>.<span class="fu">util</span>.<span class="fu">CharArraySet</span>]))
-
-  <span class="co">// (8)</span>
-  <span class="kw">val</span> builder = <span class="fu">AnalyzerBuilder</span>()
-  builder.<span class="fu">withTokenizer</span>(<span class="st">&quot;whitespace&quot;</span>)
-  builder.<span class="fu">addTokenFilter</span>(<span class="st">&quot;lowerCase&quot;</span>)
-  <span class="kw">val</span> analyzerWs = builder.<span class="fu">build</span>
-
-  <span class="kw">val</span> analyzerJa = <span class="fu">Analyzer</span>(<span class="kw">new</span> org.<span class="fu">apache</span>.<span class="fu">lucene</span>.<span class="fu">analysis</span>.<span class="fu">ja</span>.<span class="fu">JapaneseAnalyzer</span>())
-  <span class="kw">val</span> fieldTypes = Map(
-    <span class="st">&quot;file&quot;</span> -&gt; <span class="fu">FieldType</span>(<span class="kw">null</span>, <span class="kw">true</span>, <span class="kw">true</span>),
-    <span class="st">&quot;type&quot;</span> -&gt; <span class="fu">FieldType</span>(<span class="kw">null</span>, <span class="kw">true</span>, <span class="kw">true</span>),
-    <span class="st">&quot;cat&quot;</span> -&gt; <span class="fu">FieldType</span>(<span class="kw">null</span>, <span class="kw">true</span>, <span class="kw">true</span>),
-    <span class="st">&quot;body_en&quot;</span> -&gt; <span class="fu">FieldType</span>(analyzerEn, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>),   <span class="co">// (7)</span>
-    <span class="st">&quot;body_ws&quot;</span> -&gt; <span class="fu">FieldType</span>(analyzerWs, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>),   <span class="co">// (8)</span>
-    <span class="st">&quot;body_ja&quot;</span> -&gt; <span class="fu">FieldType</span>(analyzerJa, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>)
-  )
-  <span class="kw">val</span> analyzerDefault = <span class="fu">Analyzer</span>(<span class="kw">new</span> org.<span class="fu">apache</span>.<span class="fu">lucene</span>.<span class="fu">analysis</span>.<span class="fu">standard</span>.<span class="fu">StandardAnalyzer</span>())
-  Schema(analyzerDefault, fieldTypes)
-}</code></pre>
+<p>スキーマ設定ファイル examples/schema/ceeaus.confを見ると、body_enはLuceneのStandardAnalyzerを使って作成した(7)を、body_wsはLuceneのWhitespaceTokenizerにLowerCaseFilterを組み合わせて作成した(8)を使って単語分割されています。</p>
+<pre class="sourceCode json"><code class="sourceCode json"><span class="er">schema</span> <span class="fu">{</span>
+  <span class="er">defAnalyzer</span> <span class="er">{</span>
+    <span class="er">class</span> <span class="fu">:</span> <span class="er">org.apache.lucene.analysis.standard.StandardAnalyzer</span>
+  <span class="fu">}</span>
+  <span class="er">fields　=</span> <span class="ot">[</span>
+    <span class="fu">{</span>
+      <span class="er">name</span> <span class="fu">:</span> <span class="er">file</span>
+      <span class="er">indexed</span> <span class="er">:</span> <span class="kw">true</span>
+      <span class="er">stored</span> <span class="er">:</span> <span class="kw">true</span>
+    <span class="fu">}</span>
+    <span class="fu">{</span>
+      <span class="er">name</span> <span class="fu">:</span> <span class="er">type</span>
+      <span class="er">indexed</span> <span class="er">:</span> <span class="kw">true</span>
+      <span class="er">stored</span> <span class="er">:</span> <span class="kw">true</span>
+    <span class="fu">}</span>
+    <span class="fu">{</span>
+      <span class="er">name</span> <span class="fu">:</span> <span class="er">cat</span>
+      <span class="er">indexed</span> <span class="er">:</span> <span class="kw">true</span>
+      <span class="er">stored</span> <span class="er">:</span> <span class="kw">true</span>
+    <span class="fu">}</span>
+    <span class="fu">{</span>
+      <span class="er">name</span> <span class="fu">:</span> <span class="er">body_en</span>  <span class="er">//</span> <span class="er">(</span><span class="dv">7</span><span class="er">)</span>
+      <span class="er">analyzer</span> <span class="er">:</span> <span class="fu">{</span>
+        <span class="er">tokenizer</span> <span class="er">{</span>
+          <span class="er">factory</span> <span class="fu">:</span> <span class="er">standard</span>
+        <span class="fu">}</span>
+        <span class="er">filters</span> <span class="er">=</span> <span class="ot">[</span>
+          <span class="fu">{</span>
+            <span class="er">factory</span> <span class="fu">:</span> <span class="er">lowercase</span>
+          <span class="fu">}</span>
+        <span class="ot">]</span>
+      <span class="fu">}</span>
+      <span class="er">indexed</span> <span class="er">:</span> <span class="kw">true</span>
+      <span class="er">stored</span> <span class="er">:</span> <span class="kw">true</span>
+      <span class="er">termVector</span> <span class="er">:</span> <span class="kw">true</span>
+      <span class="er">positions</span> <span class="er">:</span> <span class="kw">true</span>
+    <span class="er">}</span>
+    <span class="fu">{</span>
+      <span class="er">name</span> <span class="fu">:</span> <span class="er">body_ws</span>  <span class="er">//</span> <span class="er">(</span><span class="dv">8</span><span class="er">)</span>
+      <span class="er">analyzer</span> <span class="er">:</span> <span class="fu">{</span>
+        <span class="er">tokenizer</span> <span class="er">{</span>
+          <span class="er">factory</span> <span class="fu">:</span> <span class="er">whitespace</span>
+        <span class="fu">}</span>
+        <span class="er">filters</span> <span class="er">=</span> <span class="ot">[</span>
+          <span class="fu">{</span>
+            <span class="er">factory</span> <span class="fu">:</span> <span class="er">lowercase</span>
+          <span class="fu">}</span>
+        <span class="ot">]</span>
+      <span class="fu">}</span>
+      <span class="er">indexed</span> <span class="er">:</span> <span class="kw">true</span>
+      <span class="er">stored</span> <span class="er">:</span> <span class="kw">true</span>
+      <span class="er">termVector</span> <span class="er">:</span> <span class="kw">true</span>
+      <span class="er">positions</span> <span class="er">:</span> <span class="kw">true</span>
+    <span class="er">}</span>
+    <span class="fu">{</span>
+      <span class="er">name</span> <span class="fu">:</span> <span class="er">body_ja</span>
+      <span class="er">analyzer</span> <span class="er">:</span> <span class="fu">{</span>
+        <span class="er">class</span> <span class="fu">:</span> <span class="er">org.apache.lucene.analysis.ja.JapaneseAnalyzer</span>
+      <span class="fu">}</span>
+      <span class="er">indexed</span> <span class="er">:</span> <span class="kw">true</span>
+      <span class="er">stored</span> <span class="er">:</span> <span class="kw">true</span>
+      <span class="er">termVector</span> <span class="er">:</span> <span class="kw">true</span>
+      <span class="er">positions</span> <span class="er">:</span> <span class="kw">true</span>
+    <span class="fu">}</span>
+  <span class="ot">]</span>
+<span class="er">}</span></code></pre>
 <p>body_wsとbody_enの単語分割の違いを見てみましょう。examples/correlation_analysis_ceeaus.scala プログラムを実行した状態の nlp4l のプロンプトから次のようにしてスキーマのそれぞれのフィールドから Analyzer を取得します。</p>
 <pre class="shell"><code>nlp4l&gt; val analyzerWs = schema.getAnalyzer(&quot;body_ws&quot;).get
 nlp4l&gt; val analyzerEn = schema.getAnalyzer(&quot;body_en&quot;).get</code></pre>
@@ -825,65 +858,6 @@ Top 10 frequent terms for field title
 <h1 id="dearESUsers">Elasticsearchユーザの皆様</h1>
 <h1 id="useWithMahout">Mahoutと連携する</h1>
 <h1 id="useWithSpark">Sparkと連携する</h1>
-<p>この節では、事前に Spark 1.3.0 以上がインストールされていることが必要です。(1.3.0 以前の Spark をお使いの場合は、適宜読み替えてください。)</p>
-<h2 id="mllibと連携する">MLLibと連携する</h2>
-<p>NLP4L でコーパスの特徴量を抽出し、 Spark MLlib への入力として与えることができます。</p>
-<h3 id="クラスタリング">クラスタリング</h3>
-<p>Spark MLlib にはいくつかのクラスタリングアルゴリズム(k-means, Gaussian mixture 等)が実装されていますが、ここでは LDA (Latent Dirichlet allocation) を利用する例を紹介します。なお、Spark MLlib に実装されているクラスタリングアルゴリズムの詳細は <a href="http://spark.apache.org/docs/1.3.0/mllib-clustering.html">公式リファレンス (v1.3.0)</a> を参照してください。</p>
-<p>注: LDA は Spark 1.3.0 から導入されました。</p>
-<p>サンプルプログラム examples/spark_mllib_lda.scala を実行すると、ブラウンコーパスの各ドキュメントを、TFベースの文書ベクトルに変換してファイルに出力します。</p>
-<pre class="shell"><code>nlp4l&gt; :load examples/spark_mllib_lda.scala</code></pre>
-<p>実行すると、カレントディレクトリに以下のファイルが出力されます。どのフィールドや単語を特徴量とするかにより、3パターンの特徴ベクトルを出力しています。</p>
-<p>words*.txt には1行1単語が出力されます。すなわち、行数が特徴空間の次元数となります。data*.txt は1行が1ベクトルを表し、MLlibへの入力ファイルになります。ベクトル中の要素の順番は、words*.txtと一致しています。</p>
-<ol type="1">
-<li>body フィールド中の全単語を使って特徴量を抽出するパターン。単語数は 44677 です。</li>
-</ol>
-<ul>
-<li>words.txt</li>
-<li>data.txt</li>
-</ul>
-<ol start="2" type="1">
-<li>body_pos_nn フィールド(名詞のみを抜き出したフィールド)中の全単語を使って特徴量を抽出するパターン。単語数は削減されて 13236 になります。</li>
-</ol>
-<ul>
-<li>words_noun.txt</li>
-<li>data_noun.txt</li>
-</ul>
-<ol start="3" type="1">
-<li>body_pos_nn フィールドから、比較的少ない文書に出現する単語(IDF値の高い単語)に絞って特徴量を抽出するパターン。単語数はさらに削減されて 4958 となります。</li>
-</ol>
-<ul>
-<li>words_high_idf.txt</li>
-<li>data_noun_high_idf.txt</li>
-</ul>
-<p>特徴量を抽出したら、Spark でLDAを実行します。spark-shell を起動し、以下のように入力してください。</p>
-<pre class="shell"><code>$ spark-shell
-
-scala&gt; import org.apache.spark.mllib.clustering.LDA
-scala&gt; import org.apache.spark.mllib.linalg.Vectors
-// data*.txt を入力として与える
-scala&gt; val data = sc.textFile(&quot;/path/to/data_noun_high_idf.txt&quot;)
-scala&gt; val parsedData = data.map(s =&gt; Vectors.dense(s.trim.split(&#39; &#39;).map(_.toDouble)))
-scala&gt; val corpus = parsedData.zipWithIndex.map(_.swap).cache()
-// K=5 を指定してモデルを作成する
-scala&gt; val ldaModel = new LDA().setK(5).run(corpus)
-
-// 推定されたトピックを取得する. トピックは各単語の出現確率分布として表現される.
-scala&gt; val topics = ldaModel.topicsMatrix
-6.582992067532604     0.12712473287343715   2.0749605231892994    ... (5 total)
-1.7458039064383513    0.00886714658883468   4.228671695274331     ...
-0.993056435220057     4.64132780991838      0.18921245384121668   ...
-...
-
-// 各ドキュメントがどのトピックに属するかの確率分布を取得する.
-scala&gt; val topics = ldaModel.topicDistributions
-scala&gt; topics.take(5).foreach(println)
-(384,[0.13084037186524378,0.02145904901484863,0.30073967633170434,0.18175275728283377,0.36520814550536945])
-(204,[0.5601036760461913,0.04276689792374281,0.17626863743620377,0.06992184061352519,0.15093894798033694])
-(140,[0.01548241660044312,0.8975654153324738,0.013671563672420709,0.061526631681883964,0.011753972712778454])
-(466,[0.052798328682649866,0.04602366817727088,0.7138181945792464,0.03541828992076265,0.1519415186400702])
-(160,[0.20118704750574637,0.12811775189441738,0.23204896620959134,0.1428791353110324,0.29576709907921245])</code></pre>
-<p>詳しい Spark MLlib の使い方は Spark の API ドキュメントを参照してください。</p>
 <p>TBD</p>
 <h1 id="useLucene">Luceneを使う</h1>
 <h2 id="nlp4lが提供するluceneの機能">NLP4Lが提供するLuceneの機能</h2>
