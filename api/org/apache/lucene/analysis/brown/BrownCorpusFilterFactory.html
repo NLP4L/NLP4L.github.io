@@ -1,0 +1,1001 @@
+<!DOCTYPE html >
+<html>
+        <head>
+          <title>BrownCorpusFilterFactory - org.apache.lucene.analysis.brown.BrownCorpusFilterFactory</title>
+          <meta name="description" content="BrownCorpusFilterFactory - org.apache.lucene.analysis.brown.BrownCorpusFilterFactory" />
+          <meta name="keywords" content="BrownCorpusFilterFactory org.apache.lucene.analysis.brown.BrownCorpusFilterFactory" />
+          <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+          
+      <link href="../../../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
+      <link href="../../../../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../../../../../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../../../../../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../../../../../lib/template.js"></script>
+      <script type="text/javascript" src="../../../../../lib/tools.tooltip.js"></script>
+      
+      <script type="text/javascript">
+         if(top === self) {
+            var url = '../../../../../index.html';
+            var hash = 'org.apache.lucene.analysis.brown.BrownCorpusFilterFactory';
+            var anchor = window.location.hash;
+            var anchor_opt = '';
+            if (anchor.length >= 1)
+              anchor_opt = '@' + anchor.substring(1);
+            window.location.href = url + '#' + hash + anchor_opt;
+         }
+   	  </script>
+    
+        </head>
+        <body class="type">
+      <div id="definition">
+        <img src="../../../../../lib/class_big.png" />
+        <p id="owner"><a href="../../../../package.html" class="extype" name="org">org</a>.<a href="../../../package.html" class="extype" name="org.apache">apache</a>.<a href="../../package.html" class="extype" name="org.apache.lucene">lucene</a>.<a href="../package.html" class="extype" name="org.apache.lucene.analysis">analysis</a>.<a href="package.html" class="extype" name="org.apache.lucene.analysis.brown">brown</a></p>
+        <h1>BrownCorpusFilterFactory</h1><h3><span class="morelinks"><div>Related Doc:
+            <a href="package.html" class="extype" name="org.apache.lucene.analysis.brown">package brown</a>
+          </div></span></h3><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      </div>
+
+      <h4 id="signature" class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <span class="name">BrownCorpusFilterFactory</span><span class="result"> extends <span class="extype" name="org.apache.lucene.analysis.util.TokenFilterFactory">TokenFilterFactory</span></span>
+      </span>
+      </h4>
+      
+          <div id="comment" class="fullcommenttop"><div class="toggleContainer block">
+          <span class="toggle">Linear Supertypes</span>
+          <div class="superTypes hiddenContent"><span class="extype" name="org.apache.lucene.analysis.util.TokenFilterFactory">TokenFilterFactory</span>, <span class="extype" name="org.apache.lucene.analysis.util.AbstractAnalysisFactory">AbstractAnalysisFactory</span>, <a href="../../../../../scala/package.html#AnyRef=Object" class="extmbr" name="scala.AnyRef">AnyRef</a>, <span class="extype" name="scala.Any">Any</span></div>
+        </div></div>
+        
+
+      <div id="mbrsel">
+        <div id="textfilter"><span class="pre"></span><span class="input"><input id="mbrsel-input" type="text" accesskey="/" /></span><span class="post"></span></div>
+        <div id="order">
+              <span class="filtertype">Ordering</span>
+              <ol>
+                
+                <li class="alpha in"><span>Alphabetic</span></li>
+                <li class="inherit out"><span>By inheritance</span></li>
+              </ol>
+            </div>
+        <div id="ancestors">
+                <span class="filtertype">Inherited<br />
+                </span>
+                <ol id="linearization">
+                  <li class="in" name="org.apache.lucene.analysis.brown.BrownCorpusFilterFactory"><span>BrownCorpusFilterFactory</span></li><li class="in" name="org.apache.lucene.analysis.util.TokenFilterFactory"><span>TokenFilterFactory</span></li><li class="in" name="org.apache.lucene.analysis.util.AbstractAnalysisFactory"><span>AbstractAnalysisFactory</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                </ol>
+              </div><div id="ancestors">
+            <span class="filtertype"></span>
+            <ol>
+              <li class="hideall out"><span>Hide All</span></li>
+              <li class="showall in"><span>Show all</span></li>
+            </ol>
+            <a href="http://docs.scala-lang.org/overviews/scaladoc/usage.html#members" target="_blank">Learn more about member selection</a>
+          </div>
+        <div id="visbl">
+            <span class="filtertype">Visibility</span>
+            <ol><li class="public in"><span>Public</span></li><li class="all out"><span>All</span></li></ol>
+          </div>
+      </div>
+
+      <div id="template">
+        <div id="allMembers">
+        <div id="constructors" class="members">
+              <h3>Instance Constructors</h3>
+              <ol><li name="org.apache.lucene.analysis.brown.BrownCorpusFilterFactory#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="&lt;init&gt;(args:java.util.Map[String,String]):org.apache.lucene.analysis.brown.BrownCorpusFilterFactory"></a>
+      <a id="&lt;init&gt;:BrownCorpusFilterFactory"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">new</span>
+      </span>
+      <span class="symbol">
+        <span class="name">BrownCorpusFilterFactory</span><span class="params">(<span name="args">args: <span class="extype" name="java.util.Map">Map</span>[<span class="extype" name="java.lang.String">String</span>, <span class="extype" name="java.lang.String">String</span>]</span>)</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@&lt;init&gt;(args:java.util.Map[String,String]):org.apache.lucene.analysis.brown.BrownCorpusFilterFactory" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li></ol>
+            </div>
+
+        
+
+        
+
+        <div id="values" class="values members">
+              <h3>Value Members</h3>
+              <ol><li name="scala.AnyRef#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="!=(x$1:Any):Boolean"></a>
+      <a id="!=(Any):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@!=(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="scala.AnyRef###" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="##():Int"></a>
+      <a id="##():Int"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@##():Int" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="scala.AnyRef#==" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="==(x$1:Any):Boolean"></a>
+      <a id="==(Any):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@==(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="asInstanceOf[T0]:T0"></a>
+      <a id="asInstanceOf[T0]:T0"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@asInstanceOf[T0]:T0" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="scala.AnyRef#clone" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="clone():Object"></a>
+      <a id="clone():AnyRef"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">clone</span><span class="params">()</span><span class="result">: <a href="../../../../../scala/package.html#AnyRef=Object" class="extmbr" name="scala.AnyRef">AnyRef</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@clone():Object" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../../../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.CloneNotSupportedException]">...</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li><li name="org.apache.lucene.analysis.brown.BrownCorpusFilterFactory#create" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="create(stream:org.apache.lucene.analysis.TokenStream):org.apache.lucene.analysis.TokenStream"></a>
+      <a id="create(TokenStream):TokenStream"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">create</span><span class="params">(<span name="stream">stream: <span class="extype" name="org.apache.lucene.analysis.TokenStream">TokenStream</span></span>)</span><span class="result">: <span class="extype" name="org.apache.lucene.analysis.TokenStream">TokenStream</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@create(stream:org.apache.lucene.analysis.TokenStream):org.apache.lucene.analysis.TokenStream" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="org.apache.lucene.analysis.brown.BrownCorpusFilterFactory">BrownCorpusFilterFactory</a> → TokenFilterFactory</dd></dl></div>
+    </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="eq(x$1:AnyRef):Boolean"></a>
+      <a id="eq(AnyRef):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <a href="../../../../../scala/package.html#AnyRef=Object" class="extmbr" name="scala.AnyRef">AnyRef</a></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="scala.AnyRef#equals" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="equals(x$1:Any):Boolean"></a>
+      <a id="equals(Any):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">equals</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@equals(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="finalize():Unit"></a>
+      <a id="finalize():Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@finalize():Unit" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../../../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="symbol">classOf[java.lang.Throwable]</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li><li name="org.apache.lucene.analysis.util.AbstractAnalysisFactory#get" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="get(x$1:java.util.Map[String,String],x$2:String,x$3:java.util.Collection[String],x$4:String,x$5:Boolean):String"></a>
+      <a id="get(Map[String,String],String,Collection[String],String,Boolean):String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">get</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="java.util.Map">Map</span>[<span class="extype" name="java.lang.String">String</span>, <span class="extype" name="java.lang.String">String</span>]</span>, <span name="arg1">arg1: <span class="extype" name="java.lang.String">String</span></span>, <span name="arg2">arg2: <span class="extype" name="java.util.Collection">Collection</span>[<span class="extype" name="java.lang.String">String</span>]</span>, <span name="arg3">arg3: <span class="extype" name="java.lang.String">String</span></span>, <span name="arg4">arg4: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@get(x$1:java.util.Map[String,String],x$2:String,x$3:java.util.Collection[String],x$4:String,x$5:Boolean):String" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AbstractAnalysisFactory</dd></dl></div>
+    </li><li name="org.apache.lucene.analysis.util.AbstractAnalysisFactory#get" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="get(x$1:java.util.Map[String,String],x$2:String,x$3:java.util.Collection[String],x$4:String):String"></a>
+      <a id="get(Map[String,String],String,Collection[String],String):String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">get</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="java.util.Map">Map</span>[<span class="extype" name="java.lang.String">String</span>, <span class="extype" name="java.lang.String">String</span>]</span>, <span name="arg1">arg1: <span class="extype" name="java.lang.String">String</span></span>, <span name="arg2">arg2: <span class="extype" name="java.util.Collection">Collection</span>[<span class="extype" name="java.lang.String">String</span>]</span>, <span name="arg3">arg3: <span class="extype" name="java.lang.String">String</span></span>)</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@get(x$1:java.util.Map[String,String],x$2:String,x$3:java.util.Collection[String],x$4:String):String" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AbstractAnalysisFactory</dd></dl></div>
+    </li><li name="org.apache.lucene.analysis.util.AbstractAnalysisFactory#get" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="get(x$1:java.util.Map[String,String],x$2:String,x$3:java.util.Collection[String]):String"></a>
+      <a id="get(Map[String,String],String,Collection[String]):String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">get</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="java.util.Map">Map</span>[<span class="extype" name="java.lang.String">String</span>, <span class="extype" name="java.lang.String">String</span>]</span>, <span name="arg1">arg1: <span class="extype" name="java.lang.String">String</span></span>, <span name="arg2">arg2: <span class="extype" name="java.util.Collection">Collection</span>[<span class="extype" name="java.lang.String">String</span>]</span>)</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@get(x$1:java.util.Map[String,String],x$2:String,x$3:java.util.Collection[String]):String" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AbstractAnalysisFactory</dd></dl></div>
+    </li><li name="org.apache.lucene.analysis.util.AbstractAnalysisFactory#get" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="get(x$1:java.util.Map[String,String],x$2:String,x$3:String):String"></a>
+      <a id="get(Map[String,String],String,String):String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">get</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="java.util.Map">Map</span>[<span class="extype" name="java.lang.String">String</span>, <span class="extype" name="java.lang.String">String</span>]</span>, <span name="arg1">arg1: <span class="extype" name="java.lang.String">String</span></span>, <span name="arg2">arg2: <span class="extype" name="java.lang.String">String</span></span>)</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@get(x$1:java.util.Map[String,String],x$2:String,x$3:String):String" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AbstractAnalysisFactory</dd></dl></div>
+    </li><li name="org.apache.lucene.analysis.util.AbstractAnalysisFactory#get" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="get(x$1:java.util.Map[String,String],x$2:String):String"></a>
+      <a id="get(Map[String,String],String):String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">get</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="java.util.Map">Map</span>[<span class="extype" name="java.lang.String">String</span>, <span class="extype" name="java.lang.String">String</span>]</span>, <span name="arg1">arg1: <span class="extype" name="java.lang.String">String</span></span>)</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@get(x$1:java.util.Map[String,String],x$2:String):String" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AbstractAnalysisFactory</dd></dl></div>
+    </li><li name="org.apache.lucene.analysis.util.AbstractAnalysisFactory#getBoolean" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getBoolean(x$1:java.util.Map[String,String],x$2:String,x$3:Boolean):Boolean"></a>
+      <a id="getBoolean(Map[String,String],String,Boolean):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getBoolean</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="java.util.Map">Map</span>[<span class="extype" name="java.lang.String">String</span>, <span class="extype" name="java.lang.String">String</span>]</span>, <span name="arg1">arg1: <span class="extype" name="java.lang.String">String</span></span>, <span name="arg2">arg2: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@getBoolean(x$1:java.util.Map[String,String],x$2:String,x$3:Boolean):Boolean" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../util.html" class="extype" name="org.apache.lucene.analysis.util">org.apache.lucene.analysis.util</a>] </dd><dt>Definition Classes</dt><dd>AbstractAnalysisFactory</dd></dl></div>
+    </li><li name="org.apache.lucene.analysis.util.AbstractAnalysisFactory#getChar" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getChar(x$1:java.util.Map[String,String],x$2:String,x$3:Char):Char"></a>
+      <a id="getChar(Map[String,String],String,Char):Char"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getChar</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="java.util.Map">Map</span>[<span class="extype" name="java.lang.String">String</span>, <span class="extype" name="java.lang.String">String</span>]</span>, <span name="arg1">arg1: <span class="extype" name="java.lang.String">String</span></span>, <span name="arg2">arg2: <span class="extype" name="scala.Char">Char</span></span>)</span><span class="result">: <span class="extype" name="scala.Char">Char</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@getChar(x$1:java.util.Map[String,String],x$2:String,x$3:Char):Char" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AbstractAnalysisFactory</dd></dl></div>
+    </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getClass():Class[_]"></a>
+      <a id="getClass():Class[_]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@getClass():Class[_]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="org.apache.lucene.analysis.util.AbstractAnalysisFactory#getClassArg" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getClassArg():String"></a>
+      <a id="getClassArg():String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getClassArg</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@getClassArg():String" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AbstractAnalysisFactory</dd></dl></div>
+    </li><li name="org.apache.lucene.analysis.util.AbstractAnalysisFactory#getFloat" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getFloat(x$1:java.util.Map[String,String],x$2:String,x$3:Float):Float"></a>
+      <a id="getFloat(Map[String,String],String,Float):Float"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getFloat</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="java.util.Map">Map</span>[<span class="extype" name="java.lang.String">String</span>, <span class="extype" name="java.lang.String">String</span>]</span>, <span name="arg1">arg1: <span class="extype" name="java.lang.String">String</span></span>, <span name="arg2">arg2: <span class="extype" name="scala.Float">Float</span></span>)</span><span class="result">: <span class="extype" name="scala.Float">Float</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@getFloat(x$1:java.util.Map[String,String],x$2:String,x$3:Float):Float" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../util.html" class="extype" name="org.apache.lucene.analysis.util">org.apache.lucene.analysis.util</a>] </dd><dt>Definition Classes</dt><dd>AbstractAnalysisFactory</dd></dl></div>
+    </li><li name="org.apache.lucene.analysis.util.AbstractAnalysisFactory#getInt" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getInt(x$1:java.util.Map[String,String],x$2:String,x$3:Int):Int"></a>
+      <a id="getInt(Map[String,String],String,Int):Int"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getInt</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="java.util.Map">Map</span>[<span class="extype" name="java.lang.String">String</span>, <span class="extype" name="java.lang.String">String</span>]</span>, <span name="arg1">arg1: <span class="extype" name="java.lang.String">String</span></span>, <span name="arg2">arg2: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@getInt(x$1:java.util.Map[String,String],x$2:String,x$3:Int):Int" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../util.html" class="extype" name="org.apache.lucene.analysis.util">org.apache.lucene.analysis.util</a>] </dd><dt>Definition Classes</dt><dd>AbstractAnalysisFactory</dd></dl></div>
+    </li><li name="org.apache.lucene.analysis.util.AbstractAnalysisFactory#getLines" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getLines(x$1:org.apache.lucene.analysis.util.ResourceLoader,x$2:String):java.util.List[String]"></a>
+      <a id="getLines(ResourceLoader,String):List[String]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getLines</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="org.apache.lucene.analysis.util.ResourceLoader">ResourceLoader</span></span>, <span name="arg1">arg1: <span class="extype" name="java.lang.String">String</span></span>)</span><span class="result">: <span class="extype" name="java.util.List">List</span>[<span class="extype" name="java.lang.String">String</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@getLines(x$1:org.apache.lucene.analysis.util.ResourceLoader,x$2:String):java.util.List[String]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../util.html" class="extype" name="org.apache.lucene.analysis.util">org.apache.lucene.analysis.util</a>] </dd><dt>Definition Classes</dt><dd>AbstractAnalysisFactory</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="symbol">classOf[java.io.IOException]</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li><li name="org.apache.lucene.analysis.util.AbstractAnalysisFactory#getLuceneMatchVersion" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getLuceneMatchVersion():org.apache.lucene.util.Version"></a>
+      <a id="getLuceneMatchVersion():Version"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getLuceneMatchVersion</span><span class="params">()</span><span class="result">: <span class="extype" name="org.apache.lucene.util.Version">Version</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@getLuceneMatchVersion():org.apache.lucene.util.Version" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AbstractAnalysisFactory</dd></dl></div>
+    </li><li name="org.apache.lucene.analysis.util.AbstractAnalysisFactory#getOriginalArgs" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getOriginalArgs():java.util.Map[String,String]"></a>
+      <a id="getOriginalArgs():Map[String,String]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getOriginalArgs</span><span class="params">()</span><span class="result">: <span class="extype" name="java.util.Map">Map</span>[<span class="extype" name="java.lang.String">String</span>, <span class="extype" name="java.lang.String">String</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@getOriginalArgs():java.util.Map[String,String]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AbstractAnalysisFactory</dd></dl></div>
+    </li><li name="org.apache.lucene.analysis.util.AbstractAnalysisFactory#getPattern" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getPattern(x$1:java.util.Map[String,String],x$2:String):java.util.regex.Pattern"></a>
+      <a id="getPattern(Map[String,String],String):Pattern"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getPattern</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="java.util.Map">Map</span>[<span class="extype" name="java.lang.String">String</span>, <span class="extype" name="java.lang.String">String</span>]</span>, <span name="arg1">arg1: <span class="extype" name="java.lang.String">String</span></span>)</span><span class="result">: <span class="extype" name="java.util.regex.Pattern">Pattern</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@getPattern(x$1:java.util.Map[String,String],x$2:String):java.util.regex.Pattern" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../util.html" class="extype" name="org.apache.lucene.analysis.util">org.apache.lucene.analysis.util</a>] </dd><dt>Definition Classes</dt><dd>AbstractAnalysisFactory</dd></dl></div>
+    </li><li name="org.apache.lucene.analysis.util.AbstractAnalysisFactory#getSet" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getSet(x$1:java.util.Map[String,String],x$2:String):java.util.Set[String]"></a>
+      <a id="getSet(Map[String,String],String):Set[String]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getSet</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="java.util.Map">Map</span>[<span class="extype" name="java.lang.String">String</span>, <span class="extype" name="java.lang.String">String</span>]</span>, <span name="arg1">arg1: <span class="extype" name="java.lang.String">String</span></span>)</span><span class="result">: <span class="extype" name="java.util.Set">Set</span>[<span class="extype" name="java.lang.String">String</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@getSet(x$1:java.util.Map[String,String],x$2:String):java.util.Set[String]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AbstractAnalysisFactory</dd></dl></div>
+    </li><li name="org.apache.lucene.analysis.util.AbstractAnalysisFactory#getSnowballWordSet" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getSnowballWordSet(x$1:org.apache.lucene.analysis.util.ResourceLoader,x$2:String,x$3:Boolean):org.apache.lucene.analysis.util.CharArraySet"></a>
+      <a id="getSnowballWordSet(ResourceLoader,String,Boolean):CharArraySet"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getSnowballWordSet</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="org.apache.lucene.analysis.util.ResourceLoader">ResourceLoader</span></span>, <span name="arg1">arg1: <span class="extype" name="java.lang.String">String</span></span>, <span name="arg2">arg2: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result">: <span class="extype" name="org.apache.lucene.analysis.util.CharArraySet">CharArraySet</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@getSnowballWordSet(x$1:org.apache.lucene.analysis.util.ResourceLoader,x$2:String,x$3:Boolean):org.apache.lucene.analysis.util.CharArraySet" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../util.html" class="extype" name="org.apache.lucene.analysis.util">org.apache.lucene.analysis.util</a>] </dd><dt>Definition Classes</dt><dd>AbstractAnalysisFactory</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="symbol">classOf[java.io.IOException]</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li><li name="org.apache.lucene.analysis.util.AbstractAnalysisFactory#getWordSet" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="getWordSet(x$1:org.apache.lucene.analysis.util.ResourceLoader,x$2:String,x$3:Boolean):org.apache.lucene.analysis.util.CharArraySet"></a>
+      <a id="getWordSet(ResourceLoader,String,Boolean):CharArraySet"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">getWordSet</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="org.apache.lucene.analysis.util.ResourceLoader">ResourceLoader</span></span>, <span name="arg1">arg1: <span class="extype" name="java.lang.String">String</span></span>, <span name="arg2">arg2: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result">: <span class="extype" name="org.apache.lucene.analysis.util.CharArraySet">CharArraySet</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@getWordSet(x$1:org.apache.lucene.analysis.util.ResourceLoader,x$2:String,x$3:Boolean):org.apache.lucene.analysis.util.CharArraySet" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../util.html" class="extype" name="org.apache.lucene.analysis.util">org.apache.lucene.analysis.util</a>] </dd><dt>Definition Classes</dt><dd>AbstractAnalysisFactory</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="symbol">classOf[java.io.IOException]</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li><li name="scala.AnyRef#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="hashCode():Int"></a>
+      <a id="hashCode():Int"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">hashCode</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@hashCode():Int" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="org.apache.lucene.analysis.util.AbstractAnalysisFactory#isExplicitLuceneMatchVersion" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="isExplicitLuceneMatchVersion():Boolean"></a>
+      <a id="isExplicitLuceneMatchVersion():Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">isExplicitLuceneMatchVersion</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@isExplicitLuceneMatchVersion():Boolean" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AbstractAnalysisFactory</dd></dl></div>
+    </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="isInstanceOf[T0]:Boolean"></a>
+      <a id="isInstanceOf[T0]:Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="ne(x$1:AnyRef):Boolean"></a>
+      <a id="ne(AnyRef):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <a href="../../../../../scala/package.html#AnyRef=Object" class="extmbr" name="scala.AnyRef">AnyRef</a></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="scala.AnyRef#notify" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="notify():Unit"></a>
+      <a id="notify():Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@notify():Unit" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="scala.AnyRef#notifyAll" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="notifyAll():Unit"></a>
+      <a id="notifyAll():Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@notifyAll():Unit" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="org.apache.lucene.analysis.util.AbstractAnalysisFactory#require" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="require(x$1:java.util.Map[String,String],x$2:String,x$3:java.util.Collection[String],x$4:Boolean):String"></a>
+      <a id="require(Map[String,String],String,Collection[String],Boolean):String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">require</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="java.util.Map">Map</span>[<span class="extype" name="java.lang.String">String</span>, <span class="extype" name="java.lang.String">String</span>]</span>, <span name="arg1">arg1: <span class="extype" name="java.lang.String">String</span></span>, <span name="arg2">arg2: <span class="extype" name="java.util.Collection">Collection</span>[<span class="extype" name="java.lang.String">String</span>]</span>, <span name="arg3">arg3: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@require(x$1:java.util.Map[String,String],x$2:String,x$3:java.util.Collection[String],x$4:Boolean):String" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AbstractAnalysisFactory</dd></dl></div>
+    </li><li name="org.apache.lucene.analysis.util.AbstractAnalysisFactory#require" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="require(x$1:java.util.Map[String,String],x$2:String,x$3:java.util.Collection[String]):String"></a>
+      <a id="require(Map[String,String],String,Collection[String]):String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">require</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="java.util.Map">Map</span>[<span class="extype" name="java.lang.String">String</span>, <span class="extype" name="java.lang.String">String</span>]</span>, <span name="arg1">arg1: <span class="extype" name="java.lang.String">String</span></span>, <span name="arg2">arg2: <span class="extype" name="java.util.Collection">Collection</span>[<span class="extype" name="java.lang.String">String</span>]</span>)</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@require(x$1:java.util.Map[String,String],x$2:String,x$3:java.util.Collection[String]):String" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AbstractAnalysisFactory</dd></dl></div>
+    </li><li name="org.apache.lucene.analysis.util.AbstractAnalysisFactory#require" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="require(x$1:java.util.Map[String,String],x$2:String):String"></a>
+      <a id="require(Map[String,String],String):String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">require</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="java.util.Map">Map</span>[<span class="extype" name="java.lang.String">String</span>, <span class="extype" name="java.lang.String">String</span>]</span>, <span name="arg1">arg1: <span class="extype" name="java.lang.String">String</span></span>)</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@require(x$1:java.util.Map[String,String],x$2:String):String" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AbstractAnalysisFactory</dd></dl></div>
+    </li><li name="org.apache.lucene.analysis.util.AbstractAnalysisFactory#requireBoolean" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="requireBoolean(x$1:java.util.Map[String,String],x$2:String):Boolean"></a>
+      <a id="requireBoolean(Map[String,String],String):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">requireBoolean</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="java.util.Map">Map</span>[<span class="extype" name="java.lang.String">String</span>, <span class="extype" name="java.lang.String">String</span>]</span>, <span name="arg1">arg1: <span class="extype" name="java.lang.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@requireBoolean(x$1:java.util.Map[String,String],x$2:String):Boolean" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../util.html" class="extype" name="org.apache.lucene.analysis.util">org.apache.lucene.analysis.util</a>] </dd><dt>Definition Classes</dt><dd>AbstractAnalysisFactory</dd></dl></div>
+    </li><li name="org.apache.lucene.analysis.util.AbstractAnalysisFactory#requireChar" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="requireChar(x$1:java.util.Map[String,String],x$2:String):Char"></a>
+      <a id="requireChar(Map[String,String],String):Char"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">requireChar</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="java.util.Map">Map</span>[<span class="extype" name="java.lang.String">String</span>, <span class="extype" name="java.lang.String">String</span>]</span>, <span name="arg1">arg1: <span class="extype" name="java.lang.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Char">Char</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@requireChar(x$1:java.util.Map[String,String],x$2:String):Char" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AbstractAnalysisFactory</dd></dl></div>
+    </li><li name="org.apache.lucene.analysis.util.AbstractAnalysisFactory#requireFloat" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="requireFloat(x$1:java.util.Map[String,String],x$2:String):Float"></a>
+      <a id="requireFloat(Map[String,String],String):Float"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">requireFloat</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="java.util.Map">Map</span>[<span class="extype" name="java.lang.String">String</span>, <span class="extype" name="java.lang.String">String</span>]</span>, <span name="arg1">arg1: <span class="extype" name="java.lang.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Float">Float</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@requireFloat(x$1:java.util.Map[String,String],x$2:String):Float" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../util.html" class="extype" name="org.apache.lucene.analysis.util">org.apache.lucene.analysis.util</a>] </dd><dt>Definition Classes</dt><dd>AbstractAnalysisFactory</dd></dl></div>
+    </li><li name="org.apache.lucene.analysis.util.AbstractAnalysisFactory#requireInt" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="requireInt(x$1:java.util.Map[String,String],x$2:String):Int"></a>
+      <a id="requireInt(Map[String,String],String):Int"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">requireInt</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="java.util.Map">Map</span>[<span class="extype" name="java.lang.String">String</span>, <span class="extype" name="java.lang.String">String</span>]</span>, <span name="arg1">arg1: <span class="extype" name="java.lang.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@requireInt(x$1:java.util.Map[String,String],x$2:String):Int" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../util.html" class="extype" name="org.apache.lucene.analysis.util">org.apache.lucene.analysis.util</a>] </dd><dt>Definition Classes</dt><dd>AbstractAnalysisFactory</dd></dl></div>
+    </li><li name="org.apache.lucene.analysis.util.AbstractAnalysisFactory#setExplicitLuceneMatchVersion" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="setExplicitLuceneMatchVersion(x$1:Boolean):Unit"></a>
+      <a id="setExplicitLuceneMatchVersion(Boolean):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">setExplicitLuceneMatchVersion</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@setExplicitLuceneMatchVersion(x$1:Boolean):Unit" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AbstractAnalysisFactory</dd></dl></div>
+    </li><li name="org.apache.lucene.analysis.util.AbstractAnalysisFactory#splitFileNames" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="splitFileNames(x$1:String):java.util.List[String]"></a>
+      <a id="splitFileNames(String):List[String]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">splitFileNames</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="java.lang.String">String</span></span>)</span><span class="result">: <span class="extype" name="java.util.List">List</span>[<span class="extype" name="java.lang.String">String</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@splitFileNames(x$1:String):java.util.List[String]" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../util.html" class="extype" name="org.apache.lucene.analysis.util">org.apache.lucene.analysis.util</a>] </dd><dt>Definition Classes</dt><dd>AbstractAnalysisFactory</dd></dl></div>
+    </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
+      <a id="synchronized[T0](⇒T0):T0"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="scala.AnyRef#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="toString():String"></a>
+      <a id="toString():String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@toString():String" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="wait():Unit"></a>
+      <a id="wait():Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@wait():Unit" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="wait(x$1:Long,x$2:Int):Unit"></a>
+      <a id="wait(Long,Int):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="wait(x$1:Long):Unit"></a>
+      <a id="wait(Long):Unit"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../../../../../index.html#org.apache.lucene.analysis.brown.BrownCorpusFilterFactory@wait(x$1:Long):Unit" title="Permalink" target="_top">
+        <img src="../../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+                <span class="name">@throws</span><span class="args">(<span>
+      
+      <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
+    </span>)</span>
+              
+        </dd></dl></div>
+    </li></ol>
+            </div>
+
+        
+
+        
+        </div>
+
+        <div id="inheritedMembers">
+        <div class="parent" name="org.apache.lucene.analysis.util.TokenFilterFactory">
+              <h3>Inherited from <span class="extype" name="org.apache.lucene.analysis.util.TokenFilterFactory">TokenFilterFactory</span></h3>
+            </div><div class="parent" name="org.apache.lucene.analysis.util.AbstractAnalysisFactory">
+              <h3>Inherited from <span class="extype" name="org.apache.lucene.analysis.util.AbstractAnalysisFactory">AbstractAnalysisFactory</span></h3>
+            </div><div class="parent" name="scala.AnyRef">
+              <h3>Inherited from <a href="../../../../../scala/package.html#AnyRef=Object" class="extmbr" name="scala.AnyRef">AnyRef</a></h3>
+            </div><div class="parent" name="scala.Any">
+              <h3>Inherited from <span class="extype" name="scala.Any">Any</span></h3>
+            </div>
+        
+        </div>
+
+        <div id="groupedMembers">
+        <div class="group" name="Ungrouped">
+              <h3>Ungrouped</h3>
+              
+            </div>
+        </div>
+
+      </div>
+
+      <div id="tooltip"></div>
+
+      <div id="footer">  </div>
+
+
+    </body>
+      </html>
