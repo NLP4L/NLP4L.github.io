@@ -128,7 +128,13 @@ total 67432
 くろしお出版
 ISBN978-4-87424-498-2</code></pre>
 <p>corpora/CEEAUS 以下に「言語研究のための統計入門」付属CD-ROMのデータの&quot;INDIVIDUAL WRITERS&quot;以下のフォルダー（&quot;INDIVIDUAL WRITERS&quot;は含まない）を、また、&quot;PLAIN&quot;以下のフォルダー（&quot;PLAIN&quot;を含む）をコピーしてください。コピー後、次のようになっていることを確認してください。</p>
-<pre class="shell"><code>$ find corpora/CEEAUS -type d
+<pre class="shell"><code># ディレクトリの作成
+$ mkdir -p corpora/CEEAUS
+
+# ここで CD-ROM をコピー
+
+# コピー内容の確認
+$ find corpora/CEEAUS -type d
 corpora/CEEAUS
 corpora/CEEAUS/CEECUS
 corpora/CEEAUS/CEEJUS
@@ -440,24 +446,7 @@ To shutdown the server, access this URL -&gt; http://localhost:6574/shutdown</co
 <span class="kw">val</span> index = <span class="st">&quot;/tmp/index-ceeaus-all&quot;</span>
 
 <span class="co">// (2)</span>
-<span class="kw">def</span> <span class="fu">schema</span>(): Schema = {
-  <span class="kw">val</span> analyzerEn = <span class="fu">Analyzer</span>(<span class="kw">new</span> org.<span class="fu">apache</span>.<span class="fu">lucene</span>.<span class="fu">analysis</span>.<span class="fu">standard</span>.<span class="fu">StandardAnalyzer</span>(<span class="kw">null</span>.<span class="fu">asInstanceOf</span>[org.<span class="fu">apache</span>.<span class="fu">lucene</span>.<span class="fu">analysis</span>.<span class="fu">util</span>.<span class="fu">CharArraySet</span>]))
-  <span class="kw">val</span> builder = <span class="fu">AnalyzerBuilder</span>()
-  builder.<span class="fu">withTokenizer</span>(<span class="st">&quot;whitespace&quot;</span>)
-  builder.<span class="fu">addTokenFilter</span>(<span class="st">&quot;lowerCase&quot;</span>)
-  <span class="kw">val</span> analyzerWs = builder.<span class="fu">build</span>
-  <span class="kw">val</span> analyzerJa = <span class="fu">Analyzer</span>(<span class="kw">new</span> org.<span class="fu">apache</span>.<span class="fu">lucene</span>.<span class="fu">analysis</span>.<span class="fu">ja</span>.<span class="fu">JapaneseAnalyzer</span>())
-  <span class="kw">val</span> fieldTypes = Map(
-    <span class="st">&quot;file&quot;</span> -&gt; <span class="fu">FieldType</span>(<span class="kw">null</span>, <span class="kw">true</span>, <span class="kw">true</span>),
-    <span class="st">&quot;type&quot;</span> -&gt; <span class="fu">FieldType</span>(<span class="kw">null</span>, <span class="kw">true</span>, <span class="kw">true</span>),
-    <span class="st">&quot;cat&quot;</span> -&gt; <span class="fu">FieldType</span>(<span class="kw">null</span>, <span class="kw">true</span>, <span class="kw">true</span>),
-    <span class="st">&quot;body_en&quot;</span> -&gt; <span class="fu">FieldType</span>(analyzerEn, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>),   <span class="co">// set termVectors and termPositions to true</span>
-    <span class="st">&quot;body_ws&quot;</span> -&gt; <span class="fu">FieldType</span>(analyzerWs, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>),   <span class="co">// set termVectors and termPositions to true</span>
-    <span class="st">&quot;body_ja&quot;</span> -&gt; <span class="fu">FieldType</span>(analyzerJa, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>)    <span class="co">// set termVectors and termPositions to true</span>
-  )
-  <span class="kw">val</span> analyzerDefault = <span class="fu">Analyzer</span>(<span class="kw">new</span> org.<span class="fu">apache</span>.<span class="fu">lucene</span>.<span class="fu">analysis</span>.<span class="fu">standard</span>.<span class="fu">StandardAnalyzer</span>())
-  Schema(analyzerDefault, fieldTypes)
-}
+<span class="kw">val</span> schema = SchemaLoader.<span class="fu">load</span>(<span class="st">&quot;examples/schema/ceeaus.conf&quot;</span>)
 
 <span class="co">// (3)</span>
 <span class="kw">val</span> reader = <span class="fu">IReader</span>(index, <span class="fu">schema</span>())</code></pre>
@@ -547,29 +536,73 @@ CEENAS  0.433   0.886   1.000</code></pre>
 <span class="kw">val</span> wcCUS = WordCounts.<span class="fu">count</span>(reader, <span class="st">&quot;body_ws&quot;</span>, words.<span class="fu">toSet</span>, docSetCUS)
 <span class="kw">val</span> wcNAS = WordCounts.<span class="fu">count</span>(reader, <span class="st">&quot;body_ws&quot;</span>, words.<span class="fu">toSet</span>, docSetNAS)</code></pre>
 <p>ここで注目していただきたいのが対象フィールドにbody_wsを指定している点です。前述の仮説検定ではbody_enフィールドを対象にしていました。</p>
-<p>スキーマ設定を見ると、body_enはLuceneのStandardAnalyzerを使って作成したanalyzerEnを(7)、body_wsはLuceneのWhitespaceTokenizerにLowerCaseFilterを組み合わせて作成したanalyzerWsを(8)使って単語分割されています。</p>
-<pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">def</span> <span class="fu">schema</span>(): Schema = {
-  <span class="co">// (7)</span>
-  <span class="kw">val</span> analyzerEn = <span class="fu">Analyzer</span>(<span class="kw">new</span> org.<span class="fu">apache</span>.<span class="fu">lucene</span>.<span class="fu">analysis</span>.<span class="fu">standard</span>.<span class="fu">StandardAnalyzer</span>(<span class="kw">null</span>.<span class="fu">asInstanceOf</span>[org.<span class="fu">apache</span>.<span class="fu">lucene</span>.<span class="fu">analysis</span>.<span class="fu">util</span>.<span class="fu">CharArraySet</span>]))
-
-  <span class="co">// (8)</span>
-  <span class="kw">val</span> builder = <span class="fu">AnalyzerBuilder</span>()
-  builder.<span class="fu">withTokenizer</span>(<span class="st">&quot;whitespace&quot;</span>)
-  builder.<span class="fu">addTokenFilter</span>(<span class="st">&quot;lowerCase&quot;</span>)
-  <span class="kw">val</span> analyzerWs = builder.<span class="fu">build</span>
-
-  <span class="kw">val</span> analyzerJa = <span class="fu">Analyzer</span>(<span class="kw">new</span> org.<span class="fu">apache</span>.<span class="fu">lucene</span>.<span class="fu">analysis</span>.<span class="fu">ja</span>.<span class="fu">JapaneseAnalyzer</span>())
-  <span class="kw">val</span> fieldTypes = Map(
-    <span class="st">&quot;file&quot;</span> -&gt; <span class="fu">FieldType</span>(<span class="kw">null</span>, <span class="kw">true</span>, <span class="kw">true</span>),
-    <span class="st">&quot;type&quot;</span> -&gt; <span class="fu">FieldType</span>(<span class="kw">null</span>, <span class="kw">true</span>, <span class="kw">true</span>),
-    <span class="st">&quot;cat&quot;</span> -&gt; <span class="fu">FieldType</span>(<span class="kw">null</span>, <span class="kw">true</span>, <span class="kw">true</span>),
-    <span class="st">&quot;body_en&quot;</span> -&gt; <span class="fu">FieldType</span>(analyzerEn, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>),   <span class="co">// (7)</span>
-    <span class="st">&quot;body_ws&quot;</span> -&gt; <span class="fu">FieldType</span>(analyzerWs, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>),   <span class="co">// (8)</span>
-    <span class="st">&quot;body_ja&quot;</span> -&gt; <span class="fu">FieldType</span>(analyzerJa, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>)
-  )
-  <span class="kw">val</span> analyzerDefault = <span class="fu">Analyzer</span>(<span class="kw">new</span> org.<span class="fu">apache</span>.<span class="fu">lucene</span>.<span class="fu">analysis</span>.<span class="fu">standard</span>.<span class="fu">StandardAnalyzer</span>())
-  Schema(analyzerDefault, fieldTypes)
-}</code></pre>
+<p>スキーマ設定ファイル examples/schema/ceeaus.confを見ると、body_enはLuceneのStandardAnalyzerを使って作成した(7)を、body_wsはLuceneのWhitespaceTokenizerにLowerCaseFilterを組み合わせて作成した(8)を使って単語分割されています。</p>
+<pre class="sourceCode json"><code class="sourceCode json"><span class="er">schema</span> <span class="fu">{</span>
+  <span class="er">defAnalyzer</span> <span class="er">{</span>
+    <span class="er">class</span> <span class="fu">:</span> <span class="er">org.apache.lucene.analysis.standard.StandardAnalyzer</span>
+  <span class="fu">}</span>
+  <span class="er">fields　=</span> <span class="ot">[</span>
+    <span class="fu">{</span>
+      <span class="er">name</span> <span class="fu">:</span> <span class="er">file</span>
+      <span class="er">indexed</span> <span class="er">:</span> <span class="kw">true</span>
+      <span class="er">stored</span> <span class="er">:</span> <span class="kw">true</span>
+    <span class="fu">}</span>
+    <span class="fu">{</span>
+      <span class="er">name</span> <span class="fu">:</span> <span class="er">type</span>
+      <span class="er">indexed</span> <span class="er">:</span> <span class="kw">true</span>
+      <span class="er">stored</span> <span class="er">:</span> <span class="kw">true</span>
+    <span class="fu">}</span>
+    <span class="fu">{</span>
+      <span class="er">name</span> <span class="fu">:</span> <span class="er">cat</span>
+      <span class="er">indexed</span> <span class="er">:</span> <span class="kw">true</span>
+      <span class="er">stored</span> <span class="er">:</span> <span class="kw">true</span>
+    <span class="fu">}</span>
+    <span class="fu">{</span>
+      <span class="er">name</span> <span class="fu">:</span> <span class="er">body_en</span>  <span class="er">//</span> <span class="er">(</span><span class="dv">7</span><span class="er">)</span>
+      <span class="er">analyzer</span> <span class="er">:</span> <span class="fu">{</span>
+        <span class="er">tokenizer</span> <span class="er">{</span>
+          <span class="er">factory</span> <span class="fu">:</span> <span class="er">standard</span>
+        <span class="fu">}</span>
+        <span class="er">filters</span> <span class="er">=</span> <span class="ot">[</span>
+          <span class="fu">{</span>
+            <span class="er">factory</span> <span class="fu">:</span> <span class="er">lowercase</span>
+          <span class="fu">}</span>
+        <span class="ot">]</span>
+      <span class="fu">}</span>
+      <span class="er">indexed</span> <span class="er">:</span> <span class="kw">true</span>
+      <span class="er">stored</span> <span class="er">:</span> <span class="kw">true</span>
+      <span class="er">termVector</span> <span class="er">:</span> <span class="kw">true</span>
+      <span class="er">positions</span> <span class="er">:</span> <span class="kw">true</span>
+    <span class="er">}</span>
+    <span class="fu">{</span>
+      <span class="er">name</span> <span class="fu">:</span> <span class="er">body_ws</span>  <span class="er">//</span> <span class="er">(</span><span class="dv">8</span><span class="er">)</span>
+      <span class="er">analyzer</span> <span class="er">:</span> <span class="fu">{</span>
+        <span class="er">tokenizer</span> <span class="er">{</span>
+          <span class="er">factory</span> <span class="fu">:</span> <span class="er">whitespace</span>
+        <span class="fu">}</span>
+        <span class="er">filters</span> <span class="er">=</span> <span class="ot">[</span>
+          <span class="fu">{</span>
+            <span class="er">factory</span> <span class="fu">:</span> <span class="er">lowercase</span>
+          <span class="fu">}</span>
+        <span class="ot">]</span>
+      <span class="fu">}</span>
+      <span class="er">indexed</span> <span class="er">:</span> <span class="kw">true</span>
+      <span class="er">stored</span> <span class="er">:</span> <span class="kw">true</span>
+      <span class="er">termVector</span> <span class="er">:</span> <span class="kw">true</span>
+      <span class="er">positions</span> <span class="er">:</span> <span class="kw">true</span>
+    <span class="er">}</span>
+    <span class="fu">{</span>
+      <span class="er">name</span> <span class="fu">:</span> <span class="er">body_ja</span>
+      <span class="er">analyzer</span> <span class="er">:</span> <span class="fu">{</span>
+        <span class="er">class</span> <span class="fu">:</span> <span class="er">org.apache.lucene.analysis.ja.JapaneseAnalyzer</span>
+      <span class="fu">}</span>
+      <span class="er">indexed</span> <span class="er">:</span> <span class="kw">true</span>
+      <span class="er">stored</span> <span class="er">:</span> <span class="kw">true</span>
+      <span class="er">termVector</span> <span class="er">:</span> <span class="kw">true</span>
+      <span class="er">positions</span> <span class="er">:</span> <span class="kw">true</span>
+    <span class="fu">}</span>
+  <span class="ot">]</span>
+<span class="er">}</span></code></pre>
 <p>body_wsとbody_enの単語分割の違いを見てみましょう。examples/correlation_analysis_ceeaus.scala プログラムを実行した状態の nlp4l のプロンプトから次のようにしてスキーマのそれぞれのフィールドから Analyzer を取得します。</p>
 <pre class="shell"><code>nlp4l&gt; val analyzerWs = schema.getAnalyzer(&quot;body_ws&quot;).get
 nlp4l&gt; val analyzerEn = schema.getAnalyzer(&quot;body_en&quot;).get</code></pre>
