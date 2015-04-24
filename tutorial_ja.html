@@ -426,6 +426,89 @@ To shutdown the server, access this URL -&gt; http://localhost:6574/shutdown</co
 <img src="barchart_wc.png" alt="カテゴリごとの単語出現頻度" /><figcaption>カテゴリごとの単語出現頻度</figcaption>
 </figure>
 <p>以上のチャート表示のコードは examples/chart_experimental.scala として1つのスクリプトにまとめてあります。</p>
+<h2 id="隠れマルコフモデル">隠れマルコフモデル</h2>
+<p>NLP4L では、ラベルつき訓練データから隠れマルコフモデルを学習することができる HmmModel クラスが提供されています。HmmModel と HmmModelIndexer はともに次の HmmModelSchema で定義されている Luceneインデックスのスキーマを参照しています。</p>
+<pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">trait</span> HmmModelSchema {
+  <span class="kw">def</span> <span class="fu">schema</span>(): Schema = {
+    <span class="kw">val</span> analyzer = <span class="fu">Analyzer</span>(<span class="kw">new</span> org.<span class="fu">apache</span>.<span class="fu">lucene</span>.<span class="fu">analysis</span>.<span class="fu">core</span>.<span class="fu">WhitespaceAnalyzer</span>)
+    <span class="kw">val</span> builder = <span class="fu">AnalyzerBuilder</span>()
+    builder.<span class="fu">withTokenizer</span>(<span class="st">&quot;whitespace&quot;</span>)
+    builder.<span class="fu">addTokenFilter</span>(<span class="st">&quot;shingle&quot;</span>, <span class="st">&quot;minShingleSize&quot;</span>, <span class="st">&quot;2&quot;</span>, <span class="st">&quot;maxShingleSize&quot;</span>, <span class="st">&quot;2&quot;</span>, <span class="st">&quot;outputUnigrams&quot;</span>, <span class="st">&quot;false&quot;</span>)
+    <span class="kw">val</span> analyzer2g = builder.<span class="fu">build</span>
+    <span class="kw">val</span> fieldTypes = Map(
+      <span class="st">&quot;begin&quot;</span> -&gt; <span class="fu">FieldType</span>(analyzer, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>),
+      <span class="st">&quot;class&quot;</span> -&gt; <span class="fu">FieldType</span>(analyzer, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>),
+      <span class="st">&quot;class_2g&quot;</span> -&gt; <span class="fu">FieldType</span>(analyzer2g, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>),
+      <span class="st">&quot;class_word&quot;</span> -&gt; <span class="fu">FieldType</span>(analyzer, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>),
+      <span class="st">&quot;word&quot;</span> -&gt; <span class="fu">FieldType</span>(analyzer, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>)
+    )
+    <span class="kw">val</span> analyzerDefault = analyzer
+    Schema(analyzerDefault, fieldTypes)
+  }
+}</code></pre>
+<p>隠れマルコフモデルでは、ある状態（クラス）からある状態へ遷移する確率とある状態における記号（単語）の出力確率を使います。NLP4Lではこれらの確率を HmmModelSchema で定義されるスキーマを持つ Luceneインデックスを使って求めます。状態遷移確率は class と class_2g フィールドのクラス出現数を使います。class_2g フィールドは Lucene の ShingleFilter を使ってクラス2グラムを記録しているフィールドです。class フィールドは単純にクラスを記録しているフィールドです。この2つのフィールドを使って P( vb | nn ) すなわち品詞 nn のあとに品詞 vb が出現する確率を求めることを考えます。これは実は非常に簡単で、先の単語の数を数える totalTermFreq() を使って次のように計算できます。</p>
+<pre class="math"><code>P( vb | nn ) = &quot;nn vb&quot;.totalTermFreq() / &quot;nn&quot;.totalTermFreq()</code></pre>
+<p>&quot;nn vb&quot; という2つのクラスの連続は class_2g フィールドを参照します。&quot;nn&quot; は class フィールドを参照します。同様にクラス nn における単語 program の出力確率は次のように計算できます。</p>
+<pre class="math"><code>P( program | nn ) = &quot;nn_program&quot;.totalTermFreq() / &quot;nn&quot;.totalTermFreq()</code></pre>
+<p>ここで &quot;nn_program&quot; は単語 program とクラス nn が同時に観測された場合の Luceneインデックスに登録する文字列です。これは class_word フィールドに記録されます。</p>
+<p>begin フィールドには Lucene ドキュメントの最初のクラスが記録されます。このフィールドの totalTermFreq() を使えば、各クラスの初期状態確率分布が計算できます。</p>
+<p>それでは HmmModel を使った具体例を見てみましょう。</p>
+<h3 id="英語の品詞タグ付け">英語の品詞タグ付け</h3>
+<p>隠れマルコフモデルを応用した成功例には英語の品詞タグ付けが知られています。ブラウンコーパスの英文には品詞タグがつけられていますので、ここから HmmModel を学習して、未知の英文に品詞タグをつけてみましょう。ブラウンコーパスを用意した状態で、次のようにサンプルスクリプトを実行します。</p>
+<pre class="shell"><code>nlp4l&gt; :load examples/hmm_postagger.scala</code></pre>
+<p>プログラムの最後に学習後のLuceneインデックスモデルを用いて未知の英文に品詞タグ付けを行っています。たとえば、&quot;i like to go to france .&quot; という英文の品詞タグ付け結果は次のように出力されます。</p>
+<pre class="sourceCode scala"><code class="sourceCode scala">res8: Seq[org.<span class="fu">nlp4l</span>.<span class="fu">lm</span>.<span class="fu">Token</span>] = List(<span class="fu">Token</span>(i,ppss), <span class="fu">Token</span>(like,vb), <span class="fu">Token</span>(to,to), <span class="fu">Token</span>(go,vb), <span class="fu">Token</span>(to,in), <span class="fu">Token</span>(france,np), <span class="fu">Token</span>(.,.))</code></pre>
+<p>ではサンプルプログラム冒頭の学習部分を見てみましょう。</p>
+<pre class="sourceCode scala"><code class="sourceCode scala"><span class="co">// (1)</span>
+<span class="kw">val</span> index = <span class="st">&quot;/tmp/index-brown-hmm&quot;</span>
+
+<span class="co">// (2)</span>
+<span class="kw">val</span> c: PathSet[Path] = <span class="fu">Path</span>(<span class="st">&quot;corpora&quot;</span>, <span class="st">&quot;brown&quot;</span>, <span class="st">&quot;brown&quot;</span>).<span class="fu">children</span>()
+
+<span class="co">// (3)</span>
+<span class="kw">val</span> indexer = <span class="fu">HmmModelIndexer</span>(index)
+c.<span class="fu">filter</span>{ e =&gt;
+  <span class="kw">val</span> s = e.<span class="fu">name</span>
+  <span class="kw">val</span> c = s.<span class="fu">charAt</span>(s.<span class="fu">length</span> - <span class="dv">1</span>)
+  c &gt;= &#39;<span class="dv">0</span>&#39; &amp;&amp; c &lt;= &#39;<span class="dv">9</span>&#39;
+}.<span class="fu">foreach</span>{ f =&gt;
+  <span class="kw">val</span> source = Source.<span class="fu">fromFile</span>(f.<span class="fu">path</span>, <span class="st">&quot;UTF-8&quot;</span>)
+  source.<span class="fu">getLines</span>().<span class="fu">map</span>(_.<span class="fu">trim</span>).<span class="fu">filter</span>(_.<span class="fu">length</span> &gt; <span class="dv">0</span>).<span class="fu">foreach</span> { g =&gt;
+    <span class="kw">val</span> pairs = g.<span class="fu">split</span>(<span class="st">&quot;</span><span class="ch">\\</span><span class="st">s+&quot;</span>)
+    <span class="kw">val</span> doc = pairs.<span class="fu">map</span>{h =&gt; h.<span class="fu">split</span>(<span class="st">&quot;/&quot;</span>)}.<span class="fu">filter</span>{_.<span class="fu">length</span>==<span class="dv">2</span>}.<span class="fu">map</span>{i =&gt; (<span class="fu">i</span>(<span class="dv">0</span>).<span class="fu">toLowerCase</span>(), <span class="fu">i</span>(<span class="dv">1</span>))}
+    indexer.<span class="fu">addDocument</span>(doc)
+  }
+}
+
+<span class="co">// (4)</span>
+indexer.<span class="fu">close</span>()
+
+<span class="co">// (5)</span>
+<span class="kw">val</span> model = <span class="fu">HmmModel</span>(index)</code></pre>
+<p>最初に (1) でブラウンコーパスを登録するLuceneインデックスを指定しています。(2) でブラウンコーパスのディレクトリを指定しています。これは下の(3) でファイルをひとつずつ取り出すのに参照されます。(3) で HmmModelIndexer を作成し、ブラウンコーパスのファイルの1行をLuceneドキュメントの1つとみなしてaddDocument()で HmmModelIndexer に追加しています。追加するドキュメントの形式は、単語と品詞のペアのタプルの配列です。</p>
+<p>Luceneインデックスを作成し終わったら(4)でクローズします。このようにして作成したLuceneインデックスを(5)で HmmModel で読み込んだときに隠れマルコフモデルが計算されます。</p>
+<p>英語の品詞タグ付けでモデルを使う場合は、次のように HmmTagger にモデルを適用し、HmmTagger の tokens() を呼び出します。</p>
+<pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">val</span> tagger = <span class="fu">HmmTagger</span>(model)
+
+tagger.<span class="fu">tokens</span>(<span class="st">&quot;i like to go to france .&quot;</span>)
+tagger.<span class="fu">tokens</span>(<span class="st">&quot;you executed lucene program .&quot;</span>)
+tagger.<span class="fu">tokens</span>(<span class="st">&quot;nlp4l development members may be able to present better keywords .&quot;</span>)</code></pre>
+<h3 id="カタカナ語からの英単語推定">カタカナ語からの英単語推定</h3>
+<p>NLP4L にはカタカナ語とその元になった英単語のペアに、独自にアライメントをつけた訓練データが付属しています（train_data/alpha_katakana_aligned.txt）。</p>
+<pre class="shell"><code>$ head train_data/alpha_katakana_aligned.txt 
+アaカcaデdeミーmy
+アaクcセceンnトt
+アaクcセceスss
+アaクcシciデdeンnトt
+アaクcロroバッbaトt
+アaクcショtioンn
+アaダdaプpターter
+アaフfリriカca
+エaアirバbuスs
+アaラlaスsカka</code></pre>
+<p>このデータを使って、カタカナ部分を単語に、アルファベット部分を品詞に見立てて隠れマルコフモデルを学習します。すると未知のカタカナ語から英単語を予測する事ができます。それを実装したのがexamples/trans_katakana_alpha.scala です。</p>
+<pre class="shell"><code>nlp4l&gt; :load examples/trans_katakana_alpha.scala</code></pre>
+<p>前の examples/hmm_postagger.scala とほぼ同じプログラムなので興味がある方は読み解いてみてください。</p>
 <h2 id="ジップの法則を確認する">ジップの法則を確認する</h2>
 <h2 id="仮説検定">仮説検定</h2>
 <p>先行研究では非母語話者の書いた英語にはIやyouが多用されがちで、書き手・読み手の可視性が母語話者以上に顕著であるとされます（[1]の3章、[2]）。</p>
@@ -742,7 +825,7 @@ Fields Info:
 <p>nextTerms(), prevTerms() には、スキップするページ数を渡すことができます。また、nextTerms(1) には nt, prevTerms(1) には pt というショートカット関数が定義されています。</p>
 <p>title フィールド中に含まれる単語を閲覧してみましょう。単語は辞書順で並んでおり、各行の冒頭がインデックスされている単語、DF はその単語を含むドキュメント数(document frequency)、Total TF (term frequency) はその単語の出現回数の総計を表します。</p>
 <pre class="shell"><code>nlp4l&gt; browseTerms(&quot;title&quot;)
-Browse terms for field title, page size 20
+Browse terms for field &#39;title&#39;, page size 20
 Type &quot;nextTerms(skip)&quot; or &quot;nt&quot; to browse next terms.
 Type &quot;prevTerms(skip)&quot; or &quot;pt&quot; to browse prev terms.
 Type &quot;topTerms(n)&quot; to find top n frequent terms.
@@ -780,7 +863,7 @@ christian (DF=1, Total TF=1)
 <p>title フィールドに &quot;iphone&quot; という単語を含むドキュメントを閲覧してみましょう。ドキュメントはLucene内部のドキュメントID順で並んでおり、idはドキュメントID、freq はドキュメント中に指定の単語（ここでは&quot;iphone&quot;）が出現する頻度を表します。</p>
 <p>インデックス時に position や offset (その単語がドキュメント中のどこに出現するかの情報。後述) を保存していると、これらの情報もあわせて表示されます。</p>
 <pre class="shell"><code>nlp4l&gt; browseTermDocs(&quot;title&quot;, &quot;iphone&quot;)
-Browse docs for term title in field iphone, page size 20
+Browse docs for term &#39;iphone&#39; in field &#39;title&#39;, page size 20
 Type &quot;nextDocs(skip)&quot; or &quot;nd&quot; to browse next terms.
 Type &quot;prevDocs(skip)&quot; or &quot;pd&quot; to browse prev terms.
 
@@ -917,7 +1000,6 @@ scala&gt; topics.take(5).foreach(println)
 (466,[0.052798328682649866,0.04602366817727088,0.7138181945792464,0.03541828992076265,0.1519415186400702])
 (160,[0.20118704750574637,0.12811775189441738,0.23204896620959134,0.1428791353110324,0.29576709907921245])</code></pre>
 <p>詳しい Spark MLlib の使い方は Spark の API ドキュメントを参照してください。</p>
-<p>TBD</p>
 <h1 id="useLucene">Luceneを使う</h1>
 <h2 id="nlp4lが提供するluceneの機能">NLP4Lが提供するLuceneの機能</h2>
 <h2 id="analyzer">Analyzer</h2>
