@@ -439,7 +439,7 @@ To shutdown the server, access this URL -&gt; http://localhost:6574/shutdown</co
       <span class="st">&quot;begin&quot;</span> -&gt; <span class="fu">FieldType</span>(analyzer, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>),
       <span class="st">&quot;class&quot;</span> -&gt; <span class="fu">FieldType</span>(analyzer, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>),
       <span class="st">&quot;class_2g&quot;</span> -&gt; <span class="fu">FieldType</span>(analyzer2g, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>),
-      <span class="st">&quot;class_word&quot;</span> -&gt; <span class="fu">FieldType</span>(analyzer, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>),
+      <span class="st">&quot;word_class&quot;</span> -&gt; <span class="fu">FieldType</span>(analyzer, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>),
       <span class="st">&quot;word&quot;</span> -&gt; <span class="fu">FieldType</span>(analyzer, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>)
     )
     <span class="kw">val</span> analyzerDefault = analyzer
@@ -449,8 +449,8 @@ To shutdown the server, access this URL -&gt; http://localhost:6574/shutdown</co
 <p>隠れマルコフモデルでは、ある状態（クラス）からある状態へ遷移する確率とある状態における記号（単語）の出力確率を使います。NLP4Lではこれらの確率を HmmModelSchema で定義されるスキーマを持つ Luceneインデックスを使って求めます。状態遷移確率は class と class_2g フィールドのクラス出現数を使います。class_2g フィールドは Lucene の ShingleFilter を使ってクラス2グラムを記録しているフィールドです。class フィールドは単純にクラスを記録しているフィールドです。この2つのフィールドを使って P( vb | nn ) すなわち品詞 nn のあとに品詞 vb が出現する確率を求めることを考えます。これは実は非常に簡単で、先の単語の数を数える totalTermFreq() を使って次のように計算できます。</p>
 <pre class="math"><code>P( vb | nn ) = &quot;nn vb&quot;.totalTermFreq() / &quot;nn&quot;.totalTermFreq()</code></pre>
 <p>&quot;nn vb&quot; という2つのクラスの連続は class_2g フィールドを参照します。&quot;nn&quot; は class フィールドを参照します。同様にクラス nn における単語 program の出力確率は次のように計算できます。</p>
-<pre class="math"><code>P( program | nn ) = &quot;nn_program&quot;.totalTermFreq() / &quot;nn&quot;.totalTermFreq()</code></pre>
-<p>ここで &quot;nn_program&quot; は単語 program とクラス nn が同時に観測された場合の Luceneインデックスに登録する文字列です。これは class_word フィールドに記録されます。</p>
+<pre class="math"><code>P( program | nn ) = &quot;program_nn&quot;.totalTermFreq() / &quot;nn&quot;.totalTermFreq()</code></pre>
+<p>ここで &quot;program_nn&quot; は単語 program とクラス nn が同時に観測された場合の Luceneインデックスに登録する文字列です。これは word_class フィールドに記録されます。</p>
 <p>begin フィールドには Lucene ドキュメントの最初のクラスが記録されます。このフィールドの totalTermFreq() を使えば、各クラスの初期状態確率分布が計算できます。</p>
 <p>それでは HmmModel を使った具体例を見てみましょう。</p>
 <h3 id="英語の品詞タグ付け">英語の品詞タグ付け</h3>
@@ -485,7 +485,7 @@ indexer.<span class="fu">close</span>()
 
 <span class="co">// (5)</span>
 <span class="kw">val</span> model = <span class="fu">HmmModel</span>(index)</code></pre>
-<p>最初に (1) でブラウンコーパスを登録するLuceneインデックスを指定しています。(2) でブラウンコーパスのディレクトリを指定しています。これは下の(3) でファイルをひとつずつ取り出すのに参照されます。(3) で HmmModelIndexer を作成し、ブラウンコーパスのファイルの1行をLuceneドキュメントの1つとみなしてaddDocument()で HmmModelIndexer に追加しています。追加するドキュメントの形式は、単語と品詞のペアのタプルの配列です。</p>
+<p>最初に (1) でブラウンコーパスを登録するLuceneインデックスを指定しています。(2) でブラウンコーパスのディレクトリを指定しています。これは下の(3) でファイルをひとつずつ取り出すのに参照されます。(3) で HmmModelIndexer を作成し、ブラウンコーパスのファイルの1行をLuceneドキュメントの1つとみなしてaddDocument()で HmmModelIndexer に追加しています。追加するドキュメントの形式は、単語と品詞のタプルの配列です。</p>
 <p>Luceneインデックスを作成し終わったら(4)でクローズします。このようにして作成したLuceneインデックスを(5)で HmmModel で読み込んだときに隠れマルコフモデルが計算されます。</p>
 <p>英語の品詞タグ付けでモデルを使う場合は、次のように HmmTagger にモデルを適用し、HmmTagger の tokens() を呼び出します。</p>
 <pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">val</span> tagger = <span class="fu">HmmTagger</span>(model)
@@ -493,6 +493,10 @@ indexer.<span class="fu">close</span>()
 tagger.<span class="fu">tokens</span>(<span class="st">&quot;i like to go to france .&quot;</span>)
 tagger.<span class="fu">tokens</span>(<span class="st">&quot;you executed lucene program .&quot;</span>)
 tagger.<span class="fu">tokens</span>(<span class="st">&quot;nlp4l development members may be able to present better keywords .&quot;</span>)</code></pre>
+<p>実行結果は次のように、単語とクラス（品詞）を要素に持つTokenオブジェクトのListとして返されます。</p>
+<pre class="shell"><code>res23: Seq[org.nlp4l.lm.Token] = List(Token(i,ppss), Token(like,vb), Token(to,to), Token(go,vb), Token(to,in), Token(france,np), Token(.,.))
+res24: Seq[org.nlp4l.lm.Token] = List(Token(you,ppo-tl), Token(executed,vbn), Token(lucene,X), Token(program,nil), Token(.,.))
+res25: Seq[org.nlp4l.lm.Token] = List(Token(nlp4l,X), Token(development,nn), Token(members,nns), Token(may,md), Token(be,be), Token(able,jj), Token(to,to), Token(present,vb), Token(better,rbr), Token(keywords,X), Token(.,.-hl))</code></pre>
 <h3 id="カタカナ語からの英単語推定">カタカナ語からの英単語推定</h3>
 <p>NLP4L にはカタカナ語とその元になった英単語のペアに、独自にアライメントをつけた訓練データが付属しています（train_data/alpha_katakana_aligned.txt）。</p>
 <pre class="shell"><code>$ head train_data/alpha_katakana_aligned.txt 
@@ -506,9 +510,25 @@ tagger.<span class="fu">tokens</span>(<span class="st">&quot;nlp4l development m
 アaフfリriカca
 エaアirバbuスs
 アaラlaスsカka</code></pre>
-<p>このデータを使って、カタカナ部分を単語に、アルファベット部分を品詞に見立てて隠れマルコフモデルを学習します。すると未知のカタカナ語から英単語を予測する事ができます。それを実装したのがexamples/trans_katakana_alpha.scala です。</p>
+<p>このデータを使って、カタカナ部分を単語に、アルファベット部分を品詞に見立てて隠れマルコフモデルを学習することを考えてみましょう。すると未知のカタカナ語から英単語を予測する事ができます。それを実装したのがexamples/trans_katakana_alpha.scala です。</p>
 <pre class="shell"><code>nlp4l&gt; :load examples/trans_katakana_alpha.scala</code></pre>
 <p>前の examples/hmm_postagger.scala とほぼ同じプログラムなので興味がある方は読み解いてみてください。</p>
+<p>同じくプログラムの最後は学習したモデルを使って、未知のカタカナ語から英単語を推定した結果を表示しています。</p>
+<pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">val</span> tokenizer = <span class="fu">HmmTokenizer</span>(model)
+
+tokenizer.<span class="fu">tokens</span>(<span class="st">&quot;アクション&quot;</span>)
+tokenizer.<span class="fu">tokens</span>(<span class="st">&quot;プログラム&quot;</span>)
+tokenizer.<span class="fu">tokens</span>(<span class="st">&quot;ポイント&quot;</span>)
+tokenizer.<span class="fu">tokens</span>(<span class="st">&quot;テキスト&quot;</span>)
+tokenizer.<span class="fu">tokens</span>(<span class="st">&quot;コミュニケーション&quot;</span>)
+tokenizer.<span class="fu">tokens</span>(<span class="st">&quot;エントリー&quot;</span>)</code></pre>
+<p>この実行結果は次のようになります。</p>
+<pre class="shell"><code>res35: Seq[org.nlp4l.lm.Token] = List(Token(ア,a), Token(ク,c), Token(ショ,tio), Token(ン,n))
+res36: Seq[org.nlp4l.lm.Token] = List(Token(プ,p), Token(ロ,ro), Token(グ,g), Token(ラ,ra), Token(ム,m))
+res37: Seq[org.nlp4l.lm.Token] = List(Token(ポ,po), Token(イ,i), Token(ン,n), Token(ト,t))
+res38: Seq[org.nlp4l.lm.Token] = List(Token(テ,te), Token(キス,x), Token(ト,t))
+res39: Seq[org.nlp4l.lm.Token] = List(Token(コ,co), Token(ミュ,mmu), Token(ニ,ni), Token(ケー,ca), Token(ショ,tio), Token(ン,n))
+res40: Seq[org.nlp4l.lm.Token] = List(Token(エ,e), Token(ン,n), Token(ト,t), Token(リー,ree))</code></pre>
 <h2 id="ジップの法則を確認する">ジップの法則を確認する</h2>
 <h2 id="仮説検定">仮説検定</h2>
 <p>先行研究では非母語話者の書いた英語にはIやyouが多用されがちで、書き手・読み手の可視性が母語話者以上に顕著であるとされます（[1]の3章、[2]）。</p>
