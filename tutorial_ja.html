@@ -529,6 +529,115 @@ res37: Seq[org.nlp4l.lm.Token] = List(Token(ポ,po), Token(イ,i), Token(ン,n),
 res38: Seq[org.nlp4l.lm.Token] = List(Token(テ,te), Token(キス,x), Token(ト,t))
 res39: Seq[org.nlp4l.lm.Token] = List(Token(コ,co), Token(ミュ,mmu), Token(ニ,ni), Token(ケー,ca), Token(ショ,tio), Token(ン,n))
 res40: Seq[org.nlp4l.lm.Token] = List(Token(エ,e), Token(ン,n), Token(ト,t), Token(リー,ree))</code></pre>
+<h2 id="連語分析モデル">連語分析モデル</h2>
+<p>NLP4Lでは、コーパス中に発生するある単語に注目したとき、その単語の前後に発生する単語を発生頻度付きで分析することができます。この分析を行うデータモデルをNLP4Lでは連語分析モデル（CollocationalAnalysisModel）と名付けました。連語分析モデルを使うと、ある動詞と共起しやすい前置詞などがわかります。</p>
+<p>examples/colloc_analysis_brown.scala はブラウンコーパスを分析して単語&quot;found&quot;の前後に出現しやすい単語を出現順に表示します。examples/colloc_analysis_brown.scala の出力を見やすく表にすると、次のようになります。</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">3単語前</th>
+<th style="text-align: center;">2単語前</th>
+<th style="text-align: center;">1単語前</th>
+<th style="text-align: center;">注目している単語</th>
+<th style="text-align: center;">1単語後</th>
+<th style="text-align: center;">2単語後</th>
+<th style="text-align: center;">3単語後</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">the( 3)</td>
+<td style="text-align: center;">to( 4)</td>
+<td style="text-align: center;">be( 9)</td>
+<td style="text-align: center;">found</td>
+<td style="text-align: center;">in( 9)</td>
+<td style="text-align: center;">the( 4)</td>
+<td style="text-align: center;">on( 3)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">all( 2)</td>
+<td style="text-align: center;">can( 2)</td>
+<td style="text-align: center;">been( 4)</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">to( 6)</td>
+<td style="text-align: center;">have( 2)</td>
+<td style="text-align: center;">as( 2)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">and( 2)</td>
+<td style="text-align: center;">has( 2)</td>
+<td style="text-align: center;">had( 3)</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">a( 4)</td>
+<td style="text-align: center;">some( 2)</td>
+<td style="text-align: center;">in( 2)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">3( 1)</td>
+<td style="text-align: center;">have( 2)</td>
+<td style="text-align: center;">is( 3)</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">out( 2)</td>
+<td style="text-align: center;">a( 1)</td>
+<td style="text-align: center;">is( 2)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">a( 1)</td>
+<td style="text-align: center;">he( 2)</td>
+<td style="text-align: center;">still( 3)</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">the( 2)</td>
+<td style="text-align: center;">allied( 1)</td>
+<td style="text-align: center;">of( 2)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">an( 1)</td>
+<td style="text-align: center;">it( 2)</td>
+<td style="text-align: center;">they( 3)</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">themselves( 2)</td>
+<td style="text-align: center;">be( 1)</td>
+<td style="text-align: center;">or( 2)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">are( 1)</td>
+<td style="text-align: center;">400( 1)</td>
+<td style="text-align: center;">and( 2)</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">an( 1)</td>
+<td style="text-align: center;">behave( 1)</td>
+<td style="text-align: center;">to( 2)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">as( 1)</td>
+<td style="text-align: center;">a( 1)</td>
+<td style="text-align: center;">forms( 2)</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">arable( 1)</td>
+<td style="text-align: center;">bogeys( 1)</td>
+<td style="text-align: center;">with( 2)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">asserted( 1)</td>
+<td style="text-align: center;">alternative( 1)</td>
+<td style="text-align: center;">he( 2)</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">beaming( 1)</td>
+<td style="text-align: center;">certain( 1)</td>
+<td style="text-align: center;">100( 1)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">be( 1)</td>
+<td style="text-align: center;">and( 1)</td>
+<td style="text-align: center;">i( 2)</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">but( 1)</td>
+<td style="text-align: center;">days( 1)</td>
+<td style="text-align: center;">a( 1)</td>
+</tr>
+</tbody>
+</table>
+<p>&quot;found in&quot; というフレーズが多く発生していることがわかります。また、注目している単語 &quot;found&quot; の前の単語もわかるので、&quot;be found&quot; や &quot;to be found&quot;, &quot;can be found&quot; といったフレーズも発生している可能性がうかがえます。たとえば英語学習者が英語コーパスを連語分析モデルを使って調べることで、よく使われる言い回しを得ることができるでしょう。</p>
 <h2 id="ジップの法則を確認する">ジップの法則を確認する</h2>
 <h2 id="仮説検定">仮説検定</h2>
 <p>先行研究では非母語話者の書いた英語にはIやyouが多用されがちで、書き手・読み手の可視性が母語話者以上に顕著であるとされます（[1]の3章、[2]）。</p>
