@@ -58,7 +58,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <h1 id="getCorpora">練習用コーパスの入手</h1>
 <p>NLP4Lを使って自分自身のテキストファイルの分析を始める前に、練習用コーパスを使って動作確認することをお勧めします。いきなり独自のテキストファイルを分析すると、うまく動作させるのに時間がかかったり、分析結果をどのように評価していいか悩んでしまうことがあるかもしれません。</p>
 <p>ここで説明する練習用コーパスを使ってインデックスを作成しておくと、これ以降に書かれている解説も実際に試すことができるので理解も容易になるでしょう。</p>
-<p>なおここで紹介するコーパスは、livedoorニュースコーパスを除き、研究目的以外での利用が禁止されています。使用に際しては十分ご注意ください。</p>
+<p>なおここで紹介するコーパスは、livedoorニュースコーパスとWikipediaを除き、研究目的以外での利用が禁止されています。使用に際しては十分ご注意ください。</p>
 <h2 id="nlp4lの対話型シェル">NLP4Lの対話型シェル</h2>
 <h2 id="インデックスとは">インデックスとは？</h2>
 <p>NLP4Lでは自然言語処理を行うテキストファイルをLuceneの転置インデックスに保存します。転置インデックスは単語をキーにしてその単語を含むドキュメント番号のリストを得られるように整理されたファイル構造です。転置インデックスを本書では単にインデックスと呼ぶことにします。</p>
@@ -212,6 +212,39 @@ Success.</code></pre>
 <pre class="shell"><code>$ bin/nlp4l
 nlp4l&gt; :load examples/index_reuters.scala</code></pre>
 <p>これまで同様プログラムを見れば、Luceneインデックスは/tmp/index-reutersに作られることがわかります。前の例と同じように、別のディレクトリに作成したいときは、書き換えて再度プログラムを実行してください。</p>
+<h2 id="getCorpora_wiki">Wikipediaデータの入手とインデックスの作成</h2>
+<p>Wikipediaデータは今NLP研究のコーパスとしても最も人気の高いものの一つとなっています。ただWikipediaの記事テキストはWikipedia独特のルールに従って書かれているため、Luceneインデックスに取り込む前になるべくテキストデータだけを抽出する前処理をする必要があり、Wikipediaデータを使う際のハードルともなっています。</p>
+<p>ここでは<a href="https://github.com/diegoceccarelli/json-wikipedia">json-wikipedia</a>を使って簡単にWikipediaデータをLuceneインデックスに取り込む方法をご紹介します。</p>
+<h3 id="json-wikipedia-のダウンロードとビルド">json-wikipedia のダウンロードとビルド</h3>
+<p>まず<a href="https://github.com/diegoceccarelli/json-wikipedia">json-wikipedia</a>をダウンロードしますが、作業用としてworkというディレクトリを作成し、そこにjson-wikipediaをダウンロードします。</p>
+<pre class="shell"><code>$ mkdir work
+$ cd work
+$ wget https://github.com/diegoceccarelli/json-wikipedia/archive/master.zip
+$ unzip master.zip</code></pre>
+<p>次に、ZIPを展開してできたディレクトリの下でjson-wikipediaをビルドします。</p>
+<pre class="shell"><code>$ cd json-wikipedia-master
+$ mvn assembly:assembly</code></pre>
+<p>これによりtargetディレクトリ以下に作成されたJARファイルは、NLP4LからJSONに変換されたWikipediaデータをLuceneインデックスに登録する際に参照します。</p>
+<pre class="shell"><code>$ ls target
+archive-tmp                                    json-wikipedia-1.0.0.jar
+classes                                        maven-archiver
+generated-sources                              surefire-reports
+generated-test-sources                         test-classes
+json-wikipedia-1.0.0-jar-with-dependencies.jar</code></pre>
+<h3 id="wikipediaデータのダウンロードとjsonへの変換">WikipediaデータのダウンロードとJSONへの変換</h3>
+<p><a href="https://dumps.wikimedia.org/backup-index.html">Wikipediaのダウンロードサイト</a>から各国語のリンクをたどります（日本語ならjawiki、英語ならenwiki）。そしてXXwiki-YYYYMMDD-pages-articles.xml.bz2（XXは言語、YYYYMMDDは日付）という名前のファイルをダウンロードして展開します。</p>
+<pre class="shell"><code>$ wget https://dumps.wikimedia.org/jawiki/20150512/jawiki-20150512-pages-articles.xml.bz2
+$ bunzip2 jawiki-20150512-pages-articles.xml.bz2</code></pre>
+<p>そしてjson-wikipediaを次のように実行してJSON形式に変換します。</p>
+<pre class="shell"><code>$ ./scripts/convert-xml-dump-to-json.sh en jawiki-20150512-pages-articles.xml /tmp/jawiki.json</code></pre>
+<p>第1引数には言語を指定します。現在json-wikipediaがサポートする言語は英語（en）やイタリア語（it）など非常に限られており、日本語のサポートはありませんので、上の例では英語（en）を第1引数に指定しています（それでも問題なく動作するようです）。日本語WikipediaのJSON形式への変換はおよそ30分程度です。</p>
+<h3 id="luceneインデックスへの作成">Luceneインデックスへの作成</h3>
+<p>最後にJSON形式のデータをNLP4LからLuceneインデックスに登録しますが、ビルドしてできたjson-wikipediaのJARファイルを、NLP4Lのクラスパスに含める必要があることに注意してください。</p>
+<pre class="shell"><code>$ ./target/pack/bin/nlp4l -cp json-wikipedia-1.0.0-jar-with-dependencies.jar 
+nlp4l&gt; </code></pre>
+<p>あとは次のようにexamples/index_jawiki.scalaを実行するだけです。ただしこのサンプルプログラムは日本語Wikipedia用なので、英語など他の言語の場合はこのサンプルプログラムをコピーして他言語用のプログラムを作る必要があります。特に注意が必要なのは、プログラムから参照しているスキーマ設定ファイルです。examples/schema/jawiki.confは日本語を処理するのでJapaneseAnalyzerを指定していますが、英語などのスペースで分かち書きされている言語ではStandardAnalyzerにするのがよいでしょう。</p>
+<pre class="shell"><code>nlp4l&gt; :load examples/index_jawiki.scala</code></pre>
+<p>日本語Wikipediaの場合はおよそ30分程度でLuceneインデックスの作成が完了します。</p>
 <h2 id="nlp4l-のスキーマについて">NLP4L のスキーマについて</h2>
 <p>Luceneのインデックスは基本的にスキーマレスですが、NLP4Lではスキーマを設定できます。ここで練習用コーパスのうち、livedoorニュースコーパス（ldcc）、CEEAUS、ブラウンコーパス（brown）で定義されているスキーマを概観しましょう。</p>
 <p>以下の表は各コーパスが持つフィールド名を示しています（コーパスで有効なフィールド名にチェック（x）が入っています）。</p>
