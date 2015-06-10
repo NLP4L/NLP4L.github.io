@@ -1106,6 +1106,52 @@ Top 10 frequent terms for field title
 <p>この節では、事前に Spark 1.3.0 以上がインストールされていることが必要です。(1.3.0 以前の Spark をお使いの場合は、適宜読み替えてください。)</p>
 <h2 id="mllibと連携する">MLLibと連携する</h2>
 <p>NLP4L でコーパスの特徴量を抽出し、 Spark MLlib への入力として与えることができます。</p>
+<h3 id="useWithSpark_svm">サポートベクトルマシンで文書分類</h3>
+<p>Spark MLlib にはいくつかの分類器が提供されていますが、ここではサポートベクトルマシン（SVM）を用いてlivedoorニュースコーパス（ldcc）を文書分類する方法を紹介します。</p>
+<p>まだ実行していない場合は examples/index_ldcc.scala を実行して ldcc のコーパスをLuceneインデックスに用意します。次に examples/extract_ldcc.scala を使ってLuceneインデックスから2つのカテゴリー&quot;dokujo-tsushin&quot; と &quot;sports-watch&quot;を持つ記事だけを抽出し、/tmp/index-ldcc-partという名前の別のLuceneインデックスを作成します。</p>
+<pre class="shell"><code>nlp4l&gt; :load examples/extract_ldcc.scala</code></pre>
+<p>次にコマンドラインプログラム LabeledPointAdapter を次のように実行して、/tmp/index-ldcc-part から2クラスの全文書のベクトルデータを出力します。</p>
+<pre class="shell"><code>$ java -Dfile.encoding=UTF-8 -cp &quot;target/pack/lib/*&quot; org.nlp4l.spark.mllib.LabeledPointAdapter -s examples/schema/ldcc.conf -f body -l cat /tmp/index-ldcc-part</code></pre>
+<p>ここで -s オプションにはスキーマ定義ファイル名を、-f オプションには特徴ベクトル抽出対象のフィールド名を、-l にはラベルが記録されているフィールド名を指定します。実行結果は labeled-point-out/ ディレクトリ以下に出力されます。labeled-point-out/data.txt ファイルは Spark MLlib への入力とすることができる libsvm 形式のファイルになっています。1カラム目が数値ラベル、2カラム目以降が特徴ベクトルです。数値ラベルと実際のラベル名の対応関係は labeled-point-out/label.txt ファイルに出力されます。</p>
+<pre class="shell"><code>$ cat labeled-point-out/label.txt
+dokujo-tsushin  0
+sports-watch    1</code></pre>
+<p>ではSpark MLlib のSVMを実行してみましょう。spark-shell を起動して次のプログラムを実行します。</p>
+<pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">import</span> org.<span class="fu">apache</span>.<span class="fu">spark</span>.<span class="fu">SparkContext</span>
+<span class="kw">import</span> org.<span class="fu">apache</span>.<span class="fu">spark</span>.<span class="fu">mllib</span>.<span class="fu">classification</span>.{SVMModel, SVMWithSGD}
+<span class="kw">import</span> org.<span class="fu">apache</span>.<span class="fu">spark</span>.<span class="fu">mllib</span>.<span class="fu">evaluation</span>.<span class="fu">BinaryClassificationMetrics</span>
+<span class="kw">import</span> org.<span class="fu">apache</span>.<span class="fu">spark</span>.<span class="fu">mllib</span>.<span class="fu">regression</span>.<span class="fu">LabeledPoint</span>
+<span class="kw">import</span> org.<span class="fu">apache</span>.<span class="fu">spark</span>.<span class="fu">mllib</span>.<span class="fu">linalg</span>.<span class="fu">Vectors</span>
+<span class="kw">import</span> org.<span class="fu">apache</span>.<span class="fu">spark</span>.<span class="fu">mllib</span>.<span class="fu">util</span>.<span class="fu">MLUtils</span>
+
+<span class="co">// Load training data in LIBSVM format.</span>
+<span class="kw">val</span> data = MLUtils.<span class="fu">loadLibSVMFile</span>(sc, <span class="st">&quot;labeled-point-out/data.txt&quot;</span>)
+
+<span class="co">// Split data into training (70%) and test (30%).</span>
+<span class="kw">val</span> splits = data.<span class="fu">randomSplit</span>(Array(<span class="fl">0.7</span>, <span class="fl">0.3</span>), seed = 11L)
+<span class="kw">val</span> training = <span class="fu">splits</span>(<span class="dv">0</span>).<span class="fu">cache</span>()
+<span class="kw">val</span> test = <span class="fu">splits</span>(<span class="dv">1</span>)
+
+<span class="co">// Run training algorithm to build the model</span>
+<span class="kw">val</span> numIterations = <span class="dv">100</span>
+<span class="kw">val</span> model = SVMWithSGD.<span class="fu">train</span>(training, numIterations)
+
+<span class="co">// Clear the default threshold.</span>
+model.<span class="fu">clearThreshold</span>()
+
+<span class="co">// Compute raw scores on the test set.</span>
+<span class="kw">val</span> scoreAndLabels = test.<span class="fu">map</span> { point =&gt;
+  <span class="kw">val</span> score = model.<span class="fu">predict</span>(point.<span class="fu">features</span>)
+  (score, point.<span class="fu">label</span>)
+}
+
+<span class="co">// Get evaluation metrics.</span>
+<span class="kw">val</span> metrics = <span class="kw">new</span> <span class="fu">BinaryClassificationMetrics</span>(scoreAndLabels)
+<span class="kw">val</span> auROC = metrics.<span class="fu">areaUnderROC</span>()
+
+<span class="fu">println</span>(<span class="st">&quot;Area under ROC = &quot;</span> + auROC)</code></pre>
+<p>実行結果が次のように表示されます。Area under ROCが0.9989017178259646と表示されました。</p>
+<pre class="sourceCode scala"><code class="sourceCode scala">Area under ROC = <span class="fl">0.9989017178259646</span></code></pre>
 <h3 id="クラスタリング">クラスタリング</h3>
 <p>Spark MLlib にはいくつかのクラスタリングアルゴリズム(k-means, Gaussian mixture 等)が実装されていますが、ここでは LDA (Latent Dirichlet allocation) を利用する例を紹介します。なお、Spark MLlib に実装されているクラスタリングアルゴリズムの詳細は <a href="http://spark.apache.org/docs/1.3.0/mllib-clustering.html">公式リファレンス (v1.3.0)</a> を参照してください。</p>
 <p>注: LDA は Spark 1.3.0 から導入されました。</p>
