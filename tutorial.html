@@ -68,11 +68,11 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <li>imports necessary Scala program packages where the WordCounts object is used for the word frequency . (2) specifies the Lucene index directory of Reuters corpus while (3) specifies the Lucene index directory to be used for RawReader in order to obtain reader. RawReader, in NLP4L, is a comparatively low level Reader. There also is a high level Reader called IReader that manages schema. We, however, will specifically use RawReader in order to avoid the trouble of passing a schema.</li>
 </ol>
 <p>Using the obtained reader, we will count the word frequency in the following. As Lucene has independent inverted index in every field, you need to specify a field name to perform such processes as counting number of words. In the following, we will specify a body field that has the entire body of Reuters story.</p>
-<h3 id="total-word-count-and-unlike-word-count">Total Word Count and Unlike Word Count</h3>
+<h3 id="total-word-count-and-unique-word-count">Total Word Count and Unique Word Count</h3>
 <p>We will first discuss the total word count. Lucene originally has a function to return the total word count of an unspecified field. You can, therefore, easily find out the number by using the sumTotalTermFreq() function that is the Scala wrapper of this function.</p>
 <pre class="shell"><code>nlp4l&gt; val total = reader.sumTotalTermFreq(&quot;body&quot;)
 total: Long = 1899819</code></pre>
-<p>The next is an unlike word count that is the number of word types. The unlike word count equals to the size of inverted index as it has a structure that uses unlike words as keys. Lucene, of course, can easily check it. Its Scala wrapper will be something like follows.</p>
+<p>The next is a unique word count that is the number of word types. The unique word count equals to the size of inverted index as it has a structure that uses unique words as keys. Lucene, of course, can easily check it. Its Scala wrapper will be something like follows.</p>
 <pre class="shell"><code>nlp4l&gt; val count = reader.field(&quot;body&quot;).get.terms.size
 count: Int = 64625</code></pre>
 <h3 id="counting-by-words">Counting by Words</h3>
@@ -103,7 +103,7 @@ count: Int = 64625</code></pre>
 <p>Add the all numbers resulting from allMap - the following program basically performs the same function as the totalCount() function.</p>
 <pre class="shell"><code>nlp4l&gt; allMap.values.sum
 res2: Long = 1899819</code></pre>
-<p>This certainly matches the total word count that we first found out. Also, the size of allMap should match the unlike word count. Let's find out.</p>
+<p>This certainly matches the total word count that we first found out. Also, the size of allMap should match the unique word count. Let's find out.</p>
 <pre class="shell"><code>nlp4l&gt; allMap.size
 res3: Int = 64625</code></pre>
 <p>Here we have another match.</p>
