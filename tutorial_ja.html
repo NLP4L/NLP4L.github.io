@@ -361,7 +361,7 @@ total: Long = 1899819</code></pre>
 <pre class="shell"><code>nlp4l&gt; val count = reader.field(&quot;body&quot;).get.terms.size
 count: Int = 64625</code></pre>
 <h3 id="単語ごとに数える">単語ごとに数える</h3>
-<p>今度はもう少し細かく、単語ごとに数えてみましょう。WordCountsオブジェクトのcount()関数を使えば単語ごとに数えることができます。しかし、count()関数はいくつかの引数をとるため、少し準備が必要です。以下にプログラムを示します（nlp4lのプロンプトにコピー＆ペースとして実行できます）。</p>
+<p>今度はもう少し細かく、単語ごとに数えてみましょう。WordCountsオブジェクトのcount()関数を使えば単語ごとに数えることができます。しかし、count()関数はいくつかの引数をとるため、少し準備が必要です。以下にプログラムを示します（nlp4lのプロンプトにコピー＆ペーストして実行できます）。</p>
 <pre class="sourceCode scala"><code class="sourceCode scala"><span class="co">// (4)</span>
 <span class="kw">val</span> allDS = reader.<span class="fu">universalset</span>()
 
