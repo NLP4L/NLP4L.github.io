@@ -238,7 +238,7 @@ $ bunzip2 jawiki-20150512-pages-articles.xml.bz2</code></pre>
 <p>そしてjson-wikipediaを次のように実行してJSON形式に変換します。</p>
 <pre class="shell"><code>$ ./scripts/convert-xml-dump-to-json.sh en jawiki-20150512-pages-articles.xml /tmp/jawiki.json</code></pre>
 <p>第1引数には言語を指定します。現在json-wikipediaがサポートする言語は英語（en）やイタリア語（it）など非常に限られており、日本語のサポートはありませんので、上の例では英語（en）を第1引数に指定しています（それでも問題なく動作するようです）。日本語WikipediaのJSON形式への変換はおよそ30分程度です。</p>
-<h3 id="luceneインデックスへの作成">Luceneインデックスへの作成</h3>
+<h3 id="luceneインデックスの作成">Luceneインデックスの作成</h3>
 <p>最後にJSON形式のデータをNLP4LからLuceneインデックスに登録しますが、ビルドしてできたjson-wikipediaのJARファイルを、NLP4Lのクラスパスに含める必要があることに注意してください。</p>
 <pre class="shell"><code>$ ./target/pack/bin/nlp4l -cp json-wikipedia-1.0.0-jar-with-dependencies.jar 
 nlp4l&gt; </code></pre>
