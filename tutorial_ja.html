@@ -60,6 +60,14 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <p>ここで説明する練習用コーパスを使ってインデックスを作成しておくと、これ以降に書かれている解説も実際に試すことができるので理解も容易になるでしょう。</p>
 <p>なおここで紹介するコーパスは、livedoorニュースコーパスとWikipediaを除き、研究目的以外での利用が禁止されています。使用に際しては十分ご注意ください。</p>
 <h2 id="nlp4lの対話型シェル">NLP4Lの対話型シェル</h2>
+<p>NLP4LにはコマンドやScalaコードを実行するのに便利な対話型シェルが付属しています。NLP4Lをビルドしたら次のように対話型シェル（REPL）を起動してください。</p>
+<pre class="shell"><code>$ ./target/pack/bin/nlp4l
+Welcome to NLP4L!
+Type in expressions to have them evaluated.
+Type :help for more information
+Type :? for information about NLP4L utilities
+
+nlp4l&gt; </code></pre>
 <h2 id="インデックスとは">インデックスとは？</h2>
 <p>NLP4Lでは自然言語処理を行うテキストファイルをLuceneの転置インデックスに保存します。転置インデックスは単語をキーにしてその単語を含むドキュメント番号のリストを得られるように整理されたファイル構造です。転置インデックスを本書では単にインデックスと呼ぶことにします。</p>
 <p>インデックスはNLP4Lの機能を使ってテキストファイルから新規に作成することもできますし、Apache Solr や Elasticsearch を使って作られた既存のインデックスをNLP4Lの処理対象とすることもできます。ただしその場合は Solr や Elasticsearch が使っている Lucene のバージョンに注意しましょう。あまりに古いバージョンで作成されたインデックスはNLP4LのLuceneライブラリで読めない可能性もあります。</p>
@@ -336,6 +344,56 @@ nlp4l&gt; </code></pre>
 <p>ブラウンコーパスの記事は次のように品詞タグが各単語ごとについています。</p>
 <pre class="shell"><code>The/at Fulton/np-tl County/nn-tl Grand/jj-tl Jury/nn-tl said/vbd Friday/nr an/at investigation/nn of/in Atlanta&#39;s/np$ recent/jj primary/nn election/nn produced/vbd ``/`` no/at evidence/nn &#39;&#39;/&#39;&#39; that/cs any/dti irregularities/nns took/vbd place/nn ./.</code></pre>
 <p>この文章がそのまま格納されているのが body_pos フィールドで、同じ内容だが品詞タグが取り除かれているのが body フィールドとなっています。</p>
+<h2 id="csv-ファイルのインポート">CSV ファイルのインポート</h2>
+<p>練習用コーパスを使ってLuceneインデックスを作成してきましたが、最後に独自のCSVファイルをLuceneインデックスにインポートする方法を見てみましょう。</p>
+<p>例として次のようなCSVファイルがあるとします。</p>
+<pre class="shell"><code>$ cat &lt;&lt; EOF &gt; /tmp/data.csv
+1, NLP4L, &quot;NLP4L is a natural language processing tool for Apache Lucene written in Scala.&quot;
+2, NLP4L, &quot;The main purpose of NLP4L is to use the NLP technology to improve Lucene users&#39; search experience.&quot;
+3, LUCENE, &quot;Apache Lucene is a high-performance, full-featured text search engine library written entirely in Java.&quot;
+4, SOLR, &quot;Solr is highly reliable, scalable and fault tolerant, providing distributed indexing, replication and load-balanced querying, automated failover and recovery, centralized configuration and more.&quot;
+5, SOLR, &quot;Solr powers the search and navigation features of many of the world&#39;s largest internet sites.&quot;
+EOF</code></pre>
+<p>またスキーマファイルは次のようになっているとします。</p>
+<pre class="shell"><code>$ cat &lt;&lt; EOF &gt; /tmp/schema.conf
+schema {
+  defAnalyzer {
+    class : org.apache.lucene.analysis.standard.StandardAnalyzer
+  }
+  fields　= [
+    {
+      name : id
+      indexed : true
+      stored : true
+    }
+    {
+      name : cat
+      indexed : true
+      stored : true
+    }
+    {
+      name : body
+      analyzer : {
+        tokenizer {
+          factory : standard
+        }
+        filters = [
+          {
+            factory : lowercase
+          }
+        ]
+      }
+      indexed : true
+      stored : true
+      termVector : true
+      positions : true
+      offsets : true
+    }
+  ]
+}
+EOF</code></pre>
+<p>このとき、CSVファイルをインポートするコマンドは次のように実行します。</p>
+<pre class="shell"><code>$ java -cp &quot;target/pack/lib/*&quot; org.nlp4l.core.CSVImporter --index /tmp/index-tmp --schema /tmp/schema.conf --fields id,cat,body /tmp/data.csv</code></pre>
 <h1 id="useNLP">NLPツールとしての利用</h1>
 <p>NLP4L を NLP ツールとして使う方法を紹介します。前述のLuceneインデックスに登録した練習用コーパスを使いますので、あらかじめ用意しておくとよいでしょう。</p>
 <h2 id="単語の数を数える">単語の数を数える</h2>
