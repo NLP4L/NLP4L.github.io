@@ -785,9 +785,11 @@ EOF</code></pre>
 <p>スキーマにはbodyフィールドと、そのbodyフィールドから抽出した人名を登録するためのbody_personフィールドを用意しています。</p>
 <p>また、OpenNLPのモデルファイルをダウンロードしておく必要があります。</p>
 <pre class="shell"><code>$ mkdir models
+$ cd models
 $ wget http://opennlp.sourceforge.net/models-1.5/en-sent.bin
 $ wget http://opennlp.sourceforge.net/models-1.5/en-token.bin
-$ wget http://opennlp.sourceforge.net/models-1.5/en-ner-person.bin</code></pre>
+$ wget http://opennlp.sourceforge.net/models-1.5/en-ner-person.bin
+$ cd ..</code></pre>
 <p>そしてCSVImporter を次のように--neeModelsと--neeFieldオプション付きで実行します。</p>
 <pre class="shell"><code>$ java -cp &quot;target/pack/lib/*&quot; org.nlp4l.core.CSVImporter --index /tmp/index-nee --schema /tmp/schema.conf --fields id,cat,body --neeModels models/en-sent.bin,models/en-token.bin,models/en-ner-person.bin --neeField body /tmp/data.csv</code></pre>
 <p>では固有表現抽出ができたかどうか確認します。（後述の）インデックスブラウザ機能を使ってbody_personフィールドの中を確認します。</p>
