@@ -729,6 +729,100 @@ res40: Seq[org.nlp4l.lm.Token] = List(Token(エ,e), Token(ン,n), Token(ト,t), 
 </tbody>
 </table>
 <p>&quot;found in&quot; というフレーズが多く発生していることがわかります。また、注目している単語 &quot;found&quot; の前の単語もわかるので、&quot;be found&quot; や &quot;to be found&quot;, &quot;can be found&quot; といったフレーズも発生している可能性がうかがえます。</p>
+<h2 id="nee">固有表現抽出</h2>
+<p>NLP4Lは他のNLPツールの固有表現抽出機能と連携するためのクラスを提供しています。これを使うと、Luceneインデックス作成時にあるフィールドの文章から固有表現を抽出して他のフィールドにコピーすることができます。これにより、検索のための新しい絞り込み軸を提供することができます。</p>
+<p>NLP4Lは現在、Apache OpenNLPと連携して固有表現抽出を行うOpenNLPExtractorクラスを提供しています。</p>
+<p>すでに紹介した CSVImporter コマンドはオプション指定するだけでOpenNLPExtractorクラスを使って固有表現抽出機能が適用できますので、ここではその方法を紹介しましょう。</p>
+<p>例として次のようなCSVファイルがあるとします。</p>
+<pre class="shell"><code>$ cat &lt;&lt; EOF &gt; /tmp/data.csv
+1, SPORTS, &quot;The Washington Nationals have released right-handed pitcher Mitch Lively.&quot;
+2, SPORTS, &quot;Chris Heston who no hit the New York Mets on June 9th.&quot;
+3, SPORTS, &quot;Mark Warburton wants to make veteran midfielder John Eustace the next captain of Rangers.&quot;
+EOF</code></pre>
+<p>またスキーマファイルは次のようになっているとします。</p>
+<pre class="shell"><code>$ cat &lt;&lt; EOF &gt; /tmp/schema.conf
+schema {
+  defAnalyzer {
+    class : org.apache.lucene.analysis.standard.StandardAnalyzer
+  }
+  fields　= [
+    {
+      name : id
+      indexed : true
+      stored : true
+    }
+    {
+      name : cat
+      indexed : true
+      stored : true
+    }
+    {
+      name : body
+      analyzer : {
+        tokenizer {
+          factory : standard
+        }
+        filters = [
+          {
+            factory : lowercase
+          }
+        ]
+      }
+      indexed : true
+      stored : true
+      termVector : true
+      positions : true
+      offsets : true
+    }
+    {
+      name : body_person
+      indexed : true
+      stored : true
+    }
+  ]
+}
+EOF</code></pre>
+<p>スキーマにはbodyフィールドと、そのbodyフィールドから抽出した人名を登録するためのbody_personフィールドを用意しています。</p>
+<p>また、OpenNLPのモデルファイルをダウンロードしておく必要があります。</p>
+<pre class="shell"><code>$ mkdir models
+$ wget http://opennlp.sourceforge.net/models-1.5/en-sent.bin
+$ wget http://opennlp.sourceforge.net/models-1.5/en-token.bin
+$ wget http://opennlp.sourceforge.net/models-1.5/en-ner-person.bin</code></pre>
+<p>そしてCSVImporter を次のように--neeModelsと--neeFieldオプション付きで実行します。</p>
+<pre class="shell"><code>$ java -cp &quot;target/pack/lib/*&quot; org.nlp4l.core.CSVImporter --index /tmp/index-nee --schema /tmp/schema.conf --fields id,cat,body --neeModels models/en-sent.bin,models/en-token.bin,models/en-ner-person.bin --neeField body /tmp/data.csv</code></pre>
+<p>では固有表現抽出ができたかどうか確認します。（後述の）インデックスブラウザ機能を使ってbody_personフィールドの中を確認します。</p>
+<pre class="shell"><code>$ ./target/pack/bin/nlp4l
+nlp4l&gt; open(&quot;/tmp/index-nee&quot;)
+nlp4l&gt; status
+
+========================================
+Index Path       : /tmp/index-nee
+Closed           : false
+Num of Fields    : 4
+Num of Docs      : 3
+Num of Max Docs  : 3
+Has Deletions    : false
+========================================
+        
+Fields Info:
+========================================
+  # | Name        | Num Terms 
+----------------------------------------
+  0 | id          |          3
+  1 | cat         |          1
+  2 | body        |         34
+  3 | body_person |          4
+========================================
+
+nlp4l&gt; browseTerms(&quot;body_person&quot;)
+
+nlp4l&gt; nt
+Indexed terms for field &#39;body_person&#39;
+Chris Heston (DF=1, Total TF=1)
+John Eustace (DF=1, Total TF=1)
+Mark Warburton (DF=1, Total TF=1)
+Mitch Lively (DF=1, Total TF=1)</code></pre>
+<p>結果は上のようになり、確かに人名が抽出されています。</p>
 <h2 id="ジップの法則を確認する">ジップの法則を確認する</h2>
 <h2 id="仮説検定">仮説検定</h2>
 <p>先行研究では非母語話者の書いた英語にはIやyouが多用されがちで、書き手・読み手の可視性が母語話者以上に顕著であるとされます（[1]の3章、[2]）。</p>
