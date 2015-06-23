@@ -135,7 +135,7 @@ total 67432
 石川慎一郎、前田忠彦、山崎誠 編
 くろしお出版
 ISBN978-4-87424-498-2</code></pre>
-<p>corpora/CEEAUS 以下に「言語研究のための統計入門」付属CD-ROMのデータの&quot;INDIVIDUAL WRITERS&quot;以下のフォルダー（&quot;INDIVIDUAL WRITERS&quot;は含まない）を、また、&quot;PLAIN&quot;以下のフォルダー（&quot;PLAIN&quot;を含む）をコピーしてください。コピー後、次のようになっていることを確認してください。</p>
+<p>corpora/CEEAUS 以下に「言語研究のための統計入門」付属CD-ROMのデータの&quot;INDIVIDUAL WRITERS&quot;以下のフォルダー（&quot;INDIVIDUAL WRITERS&quot;は含まない）と、&quot;PLAIN&quot;以下のフォルダー（&quot;PLAIN&quot;を含む）をコピーしてください。コピー後、次のようになっていることを確認してください。</p>
 <pre class="shell"><code># ディレクトリの作成
 $ mkdir -p corpora/CEEAUS
 
@@ -337,7 +337,7 @@ nlp4l&gt; </code></pre>
 <p>このうち、titleフィールド以下はLuceneのAnalyzerによってコーパスの登録時に文章が単語単位に分割されます。LuceneのAnalyzerは非常に高機能であり、分割だけでなくストップワードの除去、ステミング、各種文字変換などの正規化も行います。どのように分割／正規化されるかは後述します。</p>
 <p>それ以外のフィールドは、登録時に単語分割が行われず、コーパスの文字列がそのまま登録されます。特にcatフィールドには文書カテゴリが記録されているため、文書分類タスクなどに利用することができます。</p>
 <h3 id="ldcc-のスキーマ">ldcc のスキーマ</h3>
-<p>title にはニュース記事のタイトルが、body には記事本文か格納されています。2つのフィールドとも、Lucene の JapaneseAnalyzer によって単語分割が行われます。</p>
+<p>title にはニュース記事のタイトルが、body には記事本文が格納されています。2つのフィールドとも、Lucene の JapaneseAnalyzer によって単語分割が行われます。</p>
 <h3 id="ceeaus-のスキーマ">CEEAUS のスキーマ</h3>
 <p>type には CEEJUS/CEECUS/CEENAS/CJEJUS の区別が、cat には ptj（大学生のアルバイト）/smk（レストラン全面禁煙）のカテゴリが入れられています。body_en と body_ws には同じ英文が格納されていますが、body_en は Lucene の StandardAnalyzer が、body_ws には Lucene の WhitespaceAnalyzer が適用されています。これらのフィールドの使い分けですが、後述の仮説検定ではbody_enを、相関分析ではbody_wsを使っています。body_ja はサブコーパス CJEJUS の日本語文章が格納されています。このフィールドには Lucene の JapaneseAnalyzer が適用されています。</p>
 <h3 id="brown-のスキーマ">brown のスキーマ</h3>
