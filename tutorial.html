@@ -35,8 +35,22 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <ul>
 <li><a href="#gettingStarted">Let's Get Started!</a></li>
 <li><a href="#install">Installing NLP4L</a></li>
-<li><a href="#getCorpora">Obtaining Practice Corpus</a></li>
-<li><a href="#useNLP">Using as NLP Tool</a></li>
+<li><a href="#getCorpora">Obtaining Practice Corpus</a>
+<ul>
+<li><a href="#getCorpora_repl">NLP4L Interactive Shell</a></li>
+<li><a href="#getCorpora_index">What is Index?</a></li>
+<li><a href="#getCorpora_ldcc">Obtaining livedoor News Corpus and Creating Index</a></li>
+<li><a href="#getCorpora_book">Creating Index with Data in the Companion CD-ROM that Accompanies the book &quot;言語研究のための統計入門&quot; (ISBN978-4-87424-498-2)</a></li>
+<li><a href="#getCorpora_brown">Obtaining Brown Corpus and Creating an Index</a></li>
+<li><a href="#getCorpora_reuters">Obtaining Reuters Corpus and Creating an Index</a></li>
+<li><a href="#getCorpora_wiki">Obtaining Wikipedia Data and Creating an Index</a></li>
+<li><a href="#getCorpora_schema">NLP4L Schema</a></li>
+<li><a href="#getCorpora_csv">Importing a CSV File</a></li>
+</ul></li>
+<li><a href="#useNLP">Using as NLP Tool</a>
+<ul>
+<li><a href="#useNLP_wordcounts">Counting the Number of Words</a></li>
+</ul></li>
 <li><a href="#indexBrowser">Using Index Browser</a></li>
 <li><a href="#dearSolrUsers">To Solr Users</a></li>
 <li><a href="#dearESUsers">To Elasticsearch Users</a></li>
@@ -52,7 +66,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <p>Before start analyzing your own text file using NLP4L, you are encouraged to use a practice corpus to check the action. Analyzing your own text file straight away may results in longer time to successfully complete the process or wondering about the ways to evaluate the analysis.</p>
 <p>You will be able to actually try the followings and understand them easier if you first create an index using a practice corpus explained here.</p>
 <p>Note that the corpora introduced here, except for the livedoor news corpus and wikipedia, are for research purpose only. Please be very careful using them.</p>
-<h2 id="nlp4l-interactive-shell">NLP4L Interactive Shell</h2>
+<h2 id="getCorpora_repl">NLP4L Interactive Shell</h2>
 <p>NLP4L has an interactive shell that comes in handy for running commands and Scala codes. Start an interactive shell (REPL) as follows when NLP4L has been built.</p>
 <pre class="shell"><code>$ ./target/pack/bin/nlp4l
 Welcome to NLP4L!
@@ -60,11 +74,11 @@ Type in expressions to have them evaluated.
 Type :help for more information
 Type :? for information about NLP4L utilities
 nlp4l&gt;</code></pre>
-<h2 id="what-is-index">What is Index?</h2>
+<h2 id="getCorpora_index">What is Index?</h2>
 <p>NLP4L saves text files, which are put into the natural language process, in the inverted index for Lucene. An inverted index is a file structure that is organized so that you can use a word as the key to obtain a list of document numbers. We will refer to the inverted index simply as &quot;index&quot; in this document.</p>
 <p>You can use an NLP4L function to create an index from a text file or otherwise make an existing index created by Apache Solr or Elasticsearch the target of NLP4L process. When you do the latter, however, pay good attention to the version of Lucene that Solr and Elasticsearch are using. Index created using the version that is too old may not sometimes be read by NLP4L Lucene library.</p>
 <p>The followings will discuss how to obtain a practice corpus (text file) and create an index from scratch.</p>
-<h2 id="obtaining-livedoor-news-corpus-and-creating-index">Obtaining livedoor News Corpus and Creating Index</h2>
+<h2 id="getCorpora_ldcc">Obtaining livedoor News Corpus and Creating Index</h2>
 <p>Execute the following to download and expand a livedoor news corpus from the RONDHUIT site.</p>
 <pre class="shell"><code>$ mkdir -p ${nlp4l}/corpora/ldcc
 $ cd ${nlp4l}/corpora/ldcc
@@ -121,7 +135,7 @@ total 67432
 -rw-r--r-- 1 koji wheel 26263 2 24 13:40 _1_Lucene50_0.tip
 -rw-r--r-- 1 koji wheel 136 2 24 13:40 segments_1
 -rw-r--r-- 1 koji wheel 0 2 24 13:40 write.lock</code></pre>
-<h2 id="creating-index-with-data-in-the-companion-cd-rom-that-accompanies-the-book-言語研究のための統計入門-isbn978-4-87424-498-2">Creating Index with Data in the Companion CD-ROM that Accompanies the book &quot;言語研究のための統計入門&quot; (ISBN978-4-87424-498-2)</h2>
+<h2 id="getCorpora_book">Creating Index with Data in the Companion CD-ROM that Accompanies the book &quot;言語研究のための統計入門&quot; (ISBN978-4-87424-498-2)</h2>
 <p>If you have the following book [1], you can use the data in CD-ROM that accompanies this book as your corpus. Otherwise, please proceed to the next section.</p>
 <pre class="shell"><code>[1] 言語研究のための統計入門
 石川慎一郎、前田忠彦、山崎誠 編
@@ -179,7 +193,7 @@ nlp4l&gt; :load examples/index_ceeaus.scala</code></pre>
 <pre class="shell"><code>$ bin/nlp4l
 nlp4l&gt; :load examples/index_ceeaus_all.scala</code></pre>
 <p>As you can see by looking at the beginning of each program, each Lucene indexes are created in /tmp/index-ceeaus and /tmp/index-ceeaus-all respectively. As in the previous example, you need to rewrite the lines and execute the program again if you want to create them in other directories.</p>
-<h2 id="obtaining-brown-corpus-and-creating-an-index">Obtaining Brown Corpus and Creating an Index</h2>
+<h2 id="getCorpora_brown">Obtaining Brown Corpus and Creating an Index</h2>
 <p>Download the Brown corpus to corpora/brown and expand it as follows.</p>
 <pre class="shell"><code>$ mkdir ${nlp4l}/corpora/brown
 $ cd ${nlp4l}/corpora/brown
@@ -195,7 +209,7 @@ Success.</code></pre>
 <pre class="shell"><code>$ bin/nlp4l
 nlp4l&gt; :load examples/index_brown.scala</code></pre>
 <p>As you can see by looking at the beginning of each program, the Lucene index is created in /tmp/index-brown. As in the previous example, you need to rewrite the lines and execute the program again if you want to create it in other directories.</p>
-<h2 id="obtaining-reuters-corpus-and-creating-an-index">Obtaining Reuters Corpus and Creating an Index</h2>
+<h2 id="getCorpora_reuters">Obtaining Reuters Corpus and Creating an Index</h2>
 <p>You can obtain the Reuters corpus by <a href="http://trec.nist.gov/data/reuters/reuters.html">applying to</a> NIST (National Institute of Standards and Technology). Here we will use an archive that you can download from <a href="http://www.daviddlewis.com/resources/testcollections/rcv1/">Dr. David D. Lewis's site</a> introduced in the NIST site in order to show you how to create indexes for your reference.</p>
 <p>Download the Reuters corpus to corpora/reuters and expand it as follows.</p>
 <pre class="shell"><code>$ mkdir ${nlp4l}/corpora/reuters
@@ -245,7 +259,7 @@ nlp4l&gt; </code></pre>
 <p>Only you have to do now is to execute examples/index_jawiki.scala as follows. You, however, have to duplicate this sample program and write other programs for other languages as this is a program for Japanese Wikipedia. What requires the most special attention is the schema setting file that the program refer to. Examples/schema/jawiki.conf specifies JapaneseAnalyzer as it processes Japanese. You might want to use StandardAnalyzer for other languages including English where words are separated by spaces.</p>
 <pre class="shell"><code>nlp4l&gt; :load examples/index_jawiki.scala</code></pre>
 <p>The Lucene index will be created in about 30 minutes for the Japanese Wikipedia.</p>
-<h2 id="nlp4l-schema">NLP4L Schema</h2>
+<h2 id="getCorpora_schema">NLP4L Schema</h2>
 <p>The Lucene index is basically schemaless but NLP4L can set up a schema. Among the practice corpora, now let's look at schemas that are defined by the livedoor news corpus (ldcc) , CEEAUS, or the Brown corpus (brown).</p>
 <p>The table below lists field names that each corpus has (x specifies that the field is available in the corresponding corpus).</p>
 <table>
@@ -336,7 +350,7 @@ nlp4l&gt; </code></pre>
 <p>Each article in the Brown corpus has the word class tags attached by words as follows.</p>
 <pre class="shell"><code>The/at Fulton/np-tl County/nn-tl Grand/jj-tl Jury/nn-tl said/vbd Friday/nr an/at investigation/nn of/in Atlanta&#39;s/np$ recent/jj primary/nn election/nn produced/vbd ``/`` no/at evidence/nn &#39;&#39;/&#39;&#39; that/cs any/dti irregularities/nns took/vbd place/nn ./.</code></pre>
 <p>The body_pos field holds this text as it is while the body field holds the same contents but has its word class tags removed.</p>
-<h2 id="importing-a-csv-file">Importing a CSV File</h2>
+<h2 id="getCorpora_csv">Importing a CSV File</h2>
 <p>We have been using practice corpus to create Lucene indexes. Now, let's look at how to import an original CSV file to a Lucene index.</p>
 <p>As an example, let's assume that we have a following CSV file.</p>
 <pre class="shell"><code>$ cat &lt;&lt; EOF &gt; /tmp/data.csv
@@ -388,7 +402,7 @@ EOF</code></pre>
 <pre class="shell"><code>$ java -cp &quot;target/pack/lib/*&quot; org.nlp4l.core.CSVImporter --index /tmp/index-tmp --schema /tmp/schema.conf --fields id,cat,body /tmp/data.csv</code></pre>
 <h1 id="useNLP">Using as NLP Tool</h1>
 <p>We will discuss how to use NLP4L as an NLP tool. Please prepare at hand a practice corpus registered in the Lucene index discussed above so you can use it anytime.</p>
-<h2 id="counting-the-number-of-words">Counting the Number of Words</h2>
+<h2 id="useNLP_wordcounts">Counting the Number of Words</h2>
 <p>Counting the number of words that appear in the corpus is one of NLP processing fundamentals. NLP4L registers corpus to a Lucene index before processing and is very good at counting the number of words as a search engine (Lucene) has something called an inverted index that uses words as keys.</p>
 <p>Now we will discuss how to use a Reuters corpus to find out the frequency that words appear. As a starter, copy the following program, paste it to the nlp4l prompt and run it. Note that here we omitted the nlp4l prompt for a program that extends to more than one line so you can easily handle copy and paste.</p>
 <pre class="sourceCode scala"><code class="sourceCode scala"><span class="co">// (1)</span>
