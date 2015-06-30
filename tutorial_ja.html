@@ -83,6 +83,15 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <li><a href="#useLucene_index">独自インデックスの作成</a></li>
 <li><a href="#useLucene_fst">FST を単語辞書として使う</a></li>
 </ul></li>
+<li><a href="#withZeppelin">Apache Zeppelin から NLP4L を使う</a>
+<ul>
+<li><a href="#withZeppelin_install">Apache Zeppelin のインストール</a></li>
+<li><a href="#withZeppelin_deploy">NLP4L ライブラリの Apache Zeppelin へのデプロイ</a></li>
+<li><a href="#withZeppelin_start">Apache Zeppelin の起動</a></li>
+<li><a href="#withZeppelin_save">ノートの作成と NLP4LInterpreter の保存</a></li>
+<li><a href="#withZeppelin_exec">NLP4L のコマンドやプログラムの実行</a></li>
+<li><a href="#withZeppelin_visualize">単語カウントの視覚化</a></li>
+</ul></li>
 <li><a href="#develop">NLP4Lプログラムを開発して実行する</a>
 <ul>
 <li><a href="#develop_repl">REPLから実行する</a></li>
@@ -93,8 +102,8 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <h1 id="gettingStarted">はじめよう！</h1>
 <h1 id="install">インストール</h1>
 <h2 id="インストール後のディレクトリ構造">インストール後のディレクトリ構造</h2>
-<p>インストール後のディレクトリ構造は以下のようになっています。${nlp4l} は、NLP4L のインストールディレクトリを指しています。</p>
-<pre class="shell"><code>${nlp4l}/
+<p>インストール後のディレクトリ構造は以下のようになっています。$NLP4L_HOME は、NLP4L のインストールディレクトリを指しています。</p>
+<pre class="shell"><code>$NLP4L_HOME/
     bin/
     docs/
     examples/
@@ -118,8 +127,8 @@ nlp4l&gt; </code></pre>
 <p>以降では練習用のコーパス（テキストファイル）を入手して新規にインデックスを作る方法を説明します。</p>
 <h2 id="getCorpora_ldcc">livedoorニュースコーパスの入手とインデックスの作成</h2>
 <p>次のように実行してロンウイットのサイトから livedoorニュースコーパスをダウンロードして展開します。</p>
-<pre class="shell"><code>$ mkdir -p ${nlp4l}/corpora/ldcc
-$ cd ${nlp4l}/corpora/ldcc
+<pre class="shell"><code>$ mkdir -p $NLP4L_HOME/corpora/ldcc
+$ cd $NLP4L_HOME/corpora/ldcc
 $ wget http://www.rondhuit.com/download/ldcc-20140209.tar.gz
 $ tar xvzf ldcc-20140209.tar.gz</code></pre>
 <p>Windows ユーザーの方は、適宜読み替えて実行してください。</p>
@@ -233,8 +242,8 @@ nlp4l&gt; :load examples/index_ceeaus_all.scala</code></pre>
 <p>それぞれのプログラムの冒頭を見ていただければわかりますが、Luceneインデックスはそれぞれ、/tmp/index-ceeausと/tmp/index-ceeaus-allに作られます。前の例と同じように、別のディレクトリに作成したいときは、書き換えて再度プログラムを実行してください。</p>
 <h2 id="getCorpora_brown">ブラウンコーパスの入手とインデックスの作成</h2>
 <p>corpora/brown 以下に次のようにしてブラウンコーパスをダウンロードし、展開します。</p>
-<pre class="shell"><code>$ mkdir ${nlp4l}/corpora/brown
-$ cd ${nlp4l}/corpora/brown
+<pre class="shell"><code>$ mkdir $NLP4L_HOME/corpora/brown
+$ cd $NLP4L_HOME/corpora/brown
 $ wget https://ia600503.us.archive.org/21/items/BrownCorpus/brown.zip
 $ unzip brown.zip</code></pre>
 <p>Windows ユーザーの方は、適宜読み替えて実行してください。</p>
@@ -250,8 +259,8 @@ nlp4l&gt; :load examples/index_brown.scala</code></pre>
 <h2 id="getCorpora_reuters">ロイターコーパスの入手とインデックスの作成</h2>
 <p>ロイターコーパスはアメリカ国立標準技術研究所（NIST）に<a href="http://trec.nist.gov/data/reuters/reuters.html">申し込む</a>ことで入手できます。ここでは同サイトに紹介されている<a href="http://www.daviddlewis.com/resources/testcollections/rcv1/">David D. Lewis博士のサイト</a>からダウンロードできるアーカイブを使ってインデックスを作成する方法を参考までにご紹介します。</p>
 <p>corpora/reuters 以下に次のようにしてロイターコーパスをダウンロードし、展開します。</p>
-<pre class="shell"><code>$ mkdir ${nlp4l}/corpora/reuters
-$ cd ${nlp4l}/corpora/reuters
+<pre class="shell"><code>$ mkdir $NLP4L_HOME/corpora/reuters
+$ cd $NLP4L_HOME/corpora/reuters
 $ wget http://www.daviddlewis.com/resources/testcollections/reuters21578/reuters21578.tar.gz
 $ tar xvzf reuters21578.tar.gz</code></pre>
 <p>Windows ユーザーの方は、適宜読み替えて実行してください。</p>
@@ -535,32 +544,6 @@ res25: Map[String,Long] = Map(war -&gt; 140, peace -&gt; 13)
 nlp4l&gt; // (12) placesにjapanの値を持つがusaの値を持たない記事を対象とする
 nlp4l&gt; WordCounts.count(reader, &quot;body&quot;, Set(&quot;war&quot;, &quot;peace&quot;), jpDS.toSet &amp;~ usDS.toSet, -1, analyzer)
 res26: Map[String,Long] = Map(war -&gt; 16, peace -&gt; 1)</code></pre>
-<h3 id="単語カウントの視覚化experimental">単語カウントの視覚化（experimental）</h3>
-<p>これまでいくつかの視点で単語の数を数えてきました。では最後に、単語カウントデータを視覚化してみましょう。Excelなどを使えば視覚化できますが、NLP4Lでは試験的に簡単なチャート表示ツールを提供していますのでここではそれを使います。チャート表示ツールは現在 experimental です。改善のため将来は機能や使い方が変わる可能性があります。</p>
-<p>前述の単語カウント結果をあらためて実行し、変数に代入します。</p>
-<pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">val</span> usMap = WordCounts.<span class="fu">count</span>(reader, <span class="st">&quot;body&quot;</span>, Set(<span class="st">&quot;war&quot;</span>, <span class="st">&quot;peace&quot;</span>), usDS, -<span class="dv">1</span>, analyzer)
-<span class="kw">val</span> jpMap = WordCounts.<span class="fu">count</span>(reader, <span class="st">&quot;body&quot;</span>, Set(<span class="st">&quot;war&quot;</span>, <span class="st">&quot;peace&quot;</span>), jpDS, -<span class="dv">1</span>, analyzer)</code></pre>
-<p>次に、チャート表示のためのパッケージをインポートし(11)、チャート表示のプレゼンテーションを取得します(12)。その際、上で取得したデータモデルをプレゼンテーションに渡しています。プレゼンテーションにデータモデルを渡す際は、凡例表示のためのラベルも必要です。</p>
-<pre class="sourceCode scala"><code class="sourceCode scala"><span class="co">// (11)</span>
-<span class="kw">import</span> org.<span class="fu">nlp4l</span>.<span class="fu">gui</span>.<span class="fu">_</span>
-
-<span class="co">// (12)</span>
-<span class="kw">val</span> presentation = <span class="fu">BarChart</span>(List((<span class="st">&quot;US&quot;</span>,usMap), (<span class="st">&quot;Japan&quot;</span>,jpMap)))
-
-<span class="co">// (13)</span>
-<span class="kw">val</span> server = <span class="kw">new</span> <span class="fu">SimpleHttpServer</span>(presentation)
-server.<span class="fu">service</span></code></pre>
-<p>チャート表示はWebサーバから配信されますので、(13)のようにプレゼンテーションを引数にして簡易Webサーバを作成して起動します。起動すると、次のメッセージがコンソールに表示されます。</p>
-<pre class="shell"><code>nlp4l&gt; server.service
-WARNING: This function is experimental and might change in incompatible ways in the future release.
-
-To see the chart, access this URL -&gt; http://localhost:6574/chart
-To shutdown the server, access this URL -&gt; http://localhost:6574/shutdown</code></pre>
-<p>表示されている<a href="http://localhost:6574/chart">URL</a>にモダンなWebブラウザからアクセスすると、棒グラフが表示されます。簡易Webサーバを停止するには、<a href="http://localhost:6574/shutdown" class="uri">http://localhost:6574/shutdown</a>にアクセスします。</p>
-<figure>
-<img src="barchart_wc.png" alt="カテゴリごとの単語出現頻度" /><figcaption>カテゴリごとの単語出現頻度</figcaption>
-</figure>
-<p>以上のチャート表示のコードは examples/chart_experimental.scala として1つのスクリプトにまとめてあります。</p>
 <h2 id="useNLP_hmm">隠れマルコフモデル</h2>
 <p>NLP4L では、ラベルつき訓練データから隠れマルコフモデルを学習することができる HmmModel クラスが提供されています。HmmModel と HmmModelIndexer はともに次の HmmModelSchema で定義されている Luceneインデックスのスキーマを参照しています。</p>
 <pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">trait</span> HmmModelSchema {
@@ -1469,6 +1452,102 @@ i =&gt; 5164
           r =&gt; 38
            k =&gt; 10</code></pre>
 <p>SimpleFSTにはleftMostSubstring()以外にも、メモリ上に作成した単語辞書をディスクに保存するsave()や、保存した単語辞書を読み込むためのload()という関数もありますので、いろいろ活用してください。</p>
+<h1 id="withZeppelin">Apache Zeppelin から NLP4L を使う</h1>
+<p>Apache Zeppelin から NLP4L を使う方法について説明します。</p>
+<h2 id="withZeppelin_install">Apache Zeppelin のインストール</h2>
+<p>以下の手順にしたがい、Apache Zeppelin をインストールします。インストール場所はどこでもかまいませんが、ここでは ~/work-zeppelin ディレクトリにインストールすることとします。</p>
+<pre class="shell"><code>$ mkdir ~/work-zeppelin
+$ cd ~/work-zeppelin
+$ git clone https://github.com/apache/incubator-zeppelin.git
+$ cd incubator-zeppelin
+$ mvn install -DskipTests
+$ cd conf
+$ cp zeppelin-site.xml.template zeppelin-site.xml</code></pre>
+<p>上記最後のコマンドで用意したファイル zeppelin-site.xml をエディタで開き、プロパティ zeppelin.interpreters の value の最後に次のように org.nlp4l.zeppelin.NLP4LInterpreter を加えます。</p>
+<pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;property&gt;</span>
+  <span class="kw">&lt;name&gt;</span>zeppelin.interpreters<span class="kw">&lt;/name&gt;</span>
+  <span class="kw">&lt;value&gt;</span>org.apache.zeppelin.spark.SparkInterpreter,org.apache.zeppelin.spark.PySparkInterpreter,org.apache.zeppelin.spark.SparkSqlInterpreter,org.apache.zeppelin.spark.DepInterpreter,org.apache.zeppelin.markdown.Markdown,org.apache.zeppelin.angular.AngularInterpreter,org.apache.zeppelin.shell.ShellInterpreter,org.apache.zeppelin.hive.HiveInterpreter,org.apache.zeppelin.tajo.TajoInterpreter,org.apache.zeppelin.flink.FlinkInterpreter,org.apache.zeppelin.lens.LensInterpreter,org.apache.zeppelin.ignite.IgniteInterpreter,org.apache.zeppelin.ignite.IgniteSqlInterpreter,org.nlp4l.zeppelin.NLP4LInterpreter<span class="kw">&lt;/value&gt;</span>
+  <span class="kw">&lt;description&gt;</span>Comma separated interpreter configurations. First interpreter become a default<span class="kw">&lt;/description&gt;</span>
+<span class="kw">&lt;/property&gt;</span></code></pre>
+<p>また同じファイルにプロパティ zeppelin.notebook.autoInterpreterBinding を false に設定する次の項目を新規追加します。</p>
+<pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;property&gt;</span>
+  <span class="kw">&lt;name&gt;</span>zeppelin.notebook.autoInterpreterBinding<span class="kw">&lt;/name&gt;</span>
+  <span class="kw">&lt;value&gt;</span>false<span class="kw">&lt;/value&gt;</span>
+  <span class="kw">&lt;description&gt;&lt;/description&gt;</span>
+<span class="kw">&lt;/property&gt;</span></code></pre>
+<h2 id="withZeppelin_deploy">NLP4L ライブラリの Apache Zeppelin へのデプロイ</h2>
+<p>$NLP4L_HOME/target/pack/lib/ 以下の zeppelin-interpreter-XXX.jar ファイルを除く JAR ファイルを、~/work-zeppelin/incubator-zeppelin/interpreter/nlp4l/ 以下にコピーします。</p>
+<pre class="shell"><code>$ mkdir ~/work-zeppelin/incubator-zeppelin/interpreter/nlp4l
+$ cd $NLP4L_HOME
+$ cp target/pack/lib/*.jar ~/work-zeppelin/incubator-zeppelin/interpreter/nlp4l
+$ rm ~/work-zeppelin/incubator-zeppelin/interpreter/nlp4l/zeppelin-interpreter-*.jar</code></pre>
+<h2 id="withZeppelin_start">Apache Zeppelin の起動</h2>
+<p>次のようにして Apache Zeppelin を起動します。</p>
+<pre class="shell"><code>$ cd ~/work-zeppelin/incubator-zeppelin
+$ bin/zeppelin-daemon.sh start</code></pre>
+<p>なお、停止は次のように stop で行います。</p>
+<pre class="shell"><code>$ bin/zeppelin-daemon.sh stop</code></pre>
+<p>ここでは停止せずに次に進みます。</p>
+<h2 id="withZeppelin_save">ノートの作成と NLP4LInterpreter の保存</h2>
+<p>Web ブラウザから <a href="http://localhost:8080/" class="uri">http://localhost:8080/</a> にアクセスします。そして、Notebook メニューの Create new note をクリックして新しいノートを作成します。すると次のような画面が現れますので、Save ボタンをクリックして NLP4LInterpreter を保存します。</p>
+<figure>
+<img src="zeppelin-note-nlp4l-save.png" alt="Zeppelin Note 初期画面" /><figcaption>Zeppelin Note 初期画面</figcaption>
+</figure>
+<h2 id="withZeppelin_exec">NLP4L のコマンドやプログラムの実行</h2>
+<p>以降は、Apache Zeppelin のノートのプロンプトから NLP4L のコマンドやプログラムが実行できます。NLP4LInterpreter を呼び出すには、%nlp4l ディレクティブを使います。以下は status コマンドまで入れたところで、Zeppelin 画面のプレイボタン（三角形のボタン）をクリックして実行した様子です。</p>
+<pre class="shell"><code>%nlp4l
+open(&quot;/tmp/index-ldcc&quot;)
+status
+Index /tmp/index-ldcc was opened.
+res0: org.nlp4l.core.RawReader = IndexReader(path=&#39;/tmp/index-ldcc&#39;,closed=false)
+
+========================================
+Index Path       : /tmp/index-ldcc
+Closed           : false
+Num of Fields    : 5
+Num of Docs      : 7367
+Num of Max Docs  : 7367
+Has Deletions    : false
+========================================
+        
+Fields Info:
+========================================
+  # | Name  | Num Terms 
+----------------------------------------
+  0 | body  |      64543
+  1 | url   |       7367
+  2 | date  |       6753
+  3 | title |      14205
+  4 | cat   |          9
+========================================</code></pre>
+<h2 id="withZeppelin_visualize">単語カウントの視覚化</h2>
+<p>Zeppelin は数値テーブルをチャート表示してくれる視覚化機能がありますので、<a href="#useNLP_wordcounts">単語の数を数える</a>で実行した結果をチャート表示してみましょう。方法は簡単で、表示したいところで table() という関数を適用するだけです。</p>
+<p>以下はロイターコーパスの記事（Luceneのbodyフィールド）において、&quot;g&quot;で始まる単語から10個を選んで捧持するプログラムです。</p>
+<pre class="sourceCode scala"><code class="sourceCode scala">%nlp4l
+
+<span class="kw">import</span> org.<span class="fu">nlp4l</span>.<span class="fu">core</span>.<span class="fu">_</span>
+<span class="kw">import</span> org.<span class="fu">nlp4l</span>.<span class="fu">core</span>.<span class="fu">analysis</span>.<span class="fu">_</span>
+<span class="kw">import</span> org.<span class="fu">nlp4l</span>.<span class="fu">stats</span>.<span class="fu">WordCounts</span>
+
+<span class="kw">val</span> index = <span class="st">&quot;/tmp/index-reuters&quot;</span>
+
+<span class="kw">val</span> reader = <span class="fu">RawReader</span>(index)
+
+<span class="kw">val</span> allDS = reader.<span class="fu">universalset</span>()
+<span class="kw">val</span> analyzer = <span class="fu">Analyzer</span>(<span class="kw">new</span> org.<span class="fu">apache</span>.<span class="fu">lucene</span>.<span class="fu">analysis</span>.<span class="fu">standard</span>.<span class="fu">StandardAnalyzer</span>(<span class="kw">null</span>.<span class="fu">asInstanceOf</span>[org.<span class="fu">apache</span>.<span class="fu">lucene</span>.<span class="fu">analysis</span>.<span class="fu">util</span>.<span class="fu">CharArraySet</span>]))
+<span class="kw">val</span> allMap = WordCounts.<span class="fu">count</span>(reader, <span class="st">&quot;body&quot;</span>, Set.<span class="fu">empty</span>, allDS, -<span class="dv">1</span>, analyzer)
+<span class="fu">table</span>(allMap.<span class="fu">filter</span>(_.<span class="fu">_1</span>.<span class="fu">startsWith</span>(<span class="st">&quot;g&quot;</span>)).<span class="fu">take</span>(<span class="dv">10</span>), <span class="st">&quot;word&quot;</span>, <span class="st">&quot;count&quot;</span>)</code></pre>
+<p>棒グラフは次のようになります（Zeppelinの棒グラフアイコンをクリックして棒グラフ表示に切り替えます）。</p>
+<figure>
+<img src="zeppelin-wordcounts.png" alt="&quot;g&quot;で始まる単語の出現頻度" /><figcaption>&quot;g&quot;で始まる単語の出現頻度</figcaption>
+</figure>
+<p>また、RawReader の topTermsByDocFreq() や topTermsByTotalTermFreq() を使って出現頻度の大きい単語の出現数を視覚化できます。なお、table() 関数の第1引数はArrayでなければならないので、これらの関数を使うときはうしろに toArray をつける必要があります。</p>
+<pre class="sourceCode scala"><code class="sourceCode scala">%nlp4l
+<span class="fu">table</span>(reader.<span class="fu">topTermsByTotalTermFreq</span>(<span class="st">&quot;body&quot;</span>,<span class="dv">5</span>).<span class="fu">toArray</span>,<span class="st">&quot;word&quot;</span>,<span class="st">&quot;docFreq&quot;</span>,<span class="st">&quot;termFreq&quot;</span>)</code></pre>
+<p>結果は次のようになります（SETTINGS の設定を変更して表示を変えられます）。</p>
+<figure>
+<img src="zeppelin-topterms.png" alt="出現頻度の大きい単語" /><figcaption>出現頻度の大きい単語</figcaption>
+</figure>
 <h1 id="develop">NLP4Lプログラムを開発して実行する</h1>
 <h2 id="develop_repl">REPLから実行する</h2>
 <h2 id="develop_exec">コンパイルして実行する</h2>

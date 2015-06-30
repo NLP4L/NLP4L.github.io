@@ -57,6 +57,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <li><a href="#useWithMahout">Working with Mahout</a></li>
 <li><a href="#useWithSpark">Working with Spark</a></li>
 <li><a href="#useLucene">Using Lucene</a></li>
+<li><a href="#withZeppelin">Using NLP4L from Apache Zeppelin</a></li>
 <li><a href="#develop">Developing and Executing NLP4L Programs</a></li>
 <li><a href="#tm">Attribution</a></li>
 </ul>
@@ -501,38 +502,13 @@ res25: Map[String,Long] = Map(war -&gt; 140, peace -&gt; 13)
 nlp4l&gt; // (12) Articles where places has a value japan but does not have a value usa will be the target. 
 nlp4l&gt; WordCounts.count(reader, &quot;body&quot;, Set(&quot;war&quot;, &quot;peace&quot;), jpDS.toSet &amp;~ usDS.toSet, -1, analyzer)
 res26: Map[String,Long] = Map(war -&gt; 16, peace -&gt; 1)</code></pre>
-<h3 id="visualizing-word-counts-experimental">Visualizing Word Counts (experimental)</h3>
-<p>We have been counting words from several standpoints. Now, let's visualize word count data. Applications, such as Excel, enable visualization but we will use NLP4L here as it provides easy chart display tool on a trial basis. The chart display tool right now is experimental. Its functions and usage may change in the future to improve the feature.</p>
-<p>Rerun the result of above word count and assign it in a variable.</p>
-<pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">val</span> usMap = WordCounts.<span class="fu">count</span>(reader, <span class="st">&quot;body&quot;</span>, Set(<span class="st">&quot;war&quot;</span>, <span class="st">&quot;peace&quot;</span>), usDS, -<span class="dv">1</span>, analyzer)
-<span class="kw">val</span> jpMap = WordCounts.<span class="fu">count</span>(reader, <span class="st">&quot;body&quot;</span>, Set(<span class="st">&quot;war&quot;</span>, <span class="st">&quot;peace&quot;</span>), jpDS, -<span class="dv">1</span>, analyzer)</code></pre>
-<p>Next, import a package for displaying charts (11) and obtain a presentation for chart display (12). Here, a data model obtained above is being passed to a presentation. Labels for explanatory notes are required as well when you need to pass a data model.</p>
-<pre class="sourceCode scala"><code class="sourceCode scala"><span class="co">// (11)</span>
-<span class="kw">import</span> org.<span class="fu">nlp4l</span>.<span class="fu">gui</span>.<span class="fu">_</span>
-
-<span class="co">// (12)</span>
-<span class="kw">val</span> presentation = <span class="fu">BarChart</span>(List((<span class="st">&quot;US&quot;</span>,usMap), (<span class="st">&quot;Japan&quot;</span>,jpMap)))
-
-<span class="co">// (13)</span>
-<span class="kw">val</span> server = <span class="kw">new</span> <span class="fu">SimpleHttpServer</span>(presentation)
-server.<span class="fu">service</span></code></pre>
-<p>As a Web server provides a chart display, you need to create and start a simple Web server using a presentation as an argument as specified in (13). The following message is displayed on the console when it boots up.</p>
-<pre class="shell"><code>nlp4l&gt; server.service
-WARNING: This function is experimental and might change in incompatible ways in the future release.
-
-To see the chart, access this Uniform Resource Locators -&gt; http://localhost:6574/chart
-To shutdown the server, access this Uniform Resource Locators -&gt; http://localhost:6574/shutdown</code></pre>
-<p>Accessing the displayed <a href="http://localhost:6574/chart">URL</a> from a modern Web browser will display a bar chart. Access <a href="http://localhost:6574/shutdown" class="uri">http://localhost:6574/shutdown</a> to shut down the simple Web server.</p>
-<figure>
-<img src="barchart_wc.png" alt="Word frequency by category" /><figcaption>Word frequency by category</figcaption>
-</figure>
-<p>The codes for displaying the above chart is put together into one script as examples/chart_experimental.scala.</p>
 <h1 id="indexBrowser">Using Index Browser</h1>
 <h1 id="dearSolrUsers">To Solr Users</h1>
 <h1 id="dearESUsers">To Elasticsearch Users</h1>
 <h1 id="useWithMahout">Working with Mahout</h1>
 <h1 id="useWithSpark">Working with Spark</h1>
 <h1 id="useLucene">Using Lucene</h1>
+<h1 id="withZeppelin">Using NLP4L from Apache Zeppelin</h1>
 <h1 id="develop">Developing and Executing NLP4L Programs</h1>
 <h1 id="tm">Attribution</h1>
 </body>
