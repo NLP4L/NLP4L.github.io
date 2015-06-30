@@ -57,7 +57,15 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <li><a href="#useWithMahout">Working with Mahout</a></li>
 <li><a href="#useWithSpark">Working with Spark</a></li>
 <li><a href="#useLucene">Using Lucene</a></li>
-<li><a href="#withZeppelin">Using NLP4L from Apache Zeppelin</a></li>
+<li><a href="#withZeppelin">Using NLP4L from Apache Zeppelin</a>
+<ul>
+<li><a href="#withZeppelin_install">Installing Apache Zeppelin</a></li>
+<li><a href="#withZeppelin_deploy">Deploying libraries of NLP4L to Apache Zeppelin</a></li>
+<li><a href="#withZeppelin_start">Starting Apache Zeppelin</a></li>
+<li><a href="#withZeppelin_save">Creating a note and saving NLP4LInterpreter</a></li>
+<li><a href="#withZeppelin_exec">Executing commands or programs of NLP4L</a></li>
+<li><a href="#withZeppelin_visualize">Visualising word counts</a></li>
+</ul></li>
 <li><a href="#develop">Developing and Executing NLP4L Programs</a></li>
 <li><a href="#tm">Attribution</a></li>
 </ul>
@@ -509,6 +517,101 @@ res26: Map[String,Long] = Map(war -&gt; 16, peace -&gt; 1)</code></pre>
 <h1 id="useWithSpark">Working with Spark</h1>
 <h1 id="useLucene">Using Lucene</h1>
 <h1 id="withZeppelin">Using NLP4L from Apache Zeppelin</h1>
+<p>We will discuss how to use NLP4L from Apache Zeppelin.</p>
+<h2 id="withZeppelin_install">Installing Apache Zeppelin</h2>
+<p>In accordance with the following procedure, install Apache Zeppelin. You can install it anywhere you want, we install Zeppelin in ~/work-zeppelin directory.</p>
+<pre class="shell"><code>$ mkdir ~/work-zeppelin
+$ cd ~/work-zeppelin
+$ git clone https://github.com/apache/incubator-zeppelin.git
+$ cd incubator-zeppelin
+$ mvn install -DskipTests
+$ cd conf
+$ cp zeppelin-site.xml.template zeppelin-site.xml</code></pre>
+<p>Using an editor, open the file zeppelin-site.xml which has been copied from zeppelin-site.xml.template, add org.nlp4l.zeppelin.NLP4LInterpreter at the end of the value of the property zeppelin.interpreters as follows.</p>
+<pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;property&gt;</span>
+  <span class="kw">&lt;name&gt;</span>zeppelin.interpreters<span class="kw">&lt;/name&gt;</span>
+  <span class="kw">&lt;value&gt;</span>org.apache.zeppelin.spark.SparkInterpreter,org.apache.zeppelin.spark.PySparkInterpreter,org.apache.zeppelin.spark.SparkSqlInterpreter,org.apache.zeppelin.spark.DepInterpreter,org.apache.zeppelin.markdown.Markdown,org.apache.zeppelin.angular.AngularInterpreter,org.apache.zeppelin.shell.ShellInterpreter,org.apache.zeppelin.hive.HiveInterpreter,org.apache.zeppelin.tajo.TajoInterpreter,org.apache.zeppelin.flink.FlinkInterpreter,org.apache.zeppelin.lens.LensInterpreter,org.apache.zeppelin.ignite.IgniteInterpreter,org.apache.zeppelin.ignite.IgniteSqlInterpreter,org.nlp4l.zeppelin.NLP4LInterpreter<span class="kw">&lt;/value&gt;</span>
+  <span class="kw">&lt;description&gt;</span>Comma separated interpreter configurations. First interpreter become a default<span class="kw">&lt;/description&gt;</span>
+<span class="kw">&lt;/property&gt;</span></code></pre>
+<p>In addition, add and set false to the property zeppelin.notebook.autoInterpreterBinding in the same file.</p>
+<pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;property&gt;</span>
+  <span class="kw">&lt;name&gt;</span>zeppelin.notebook.autoInterpreterBinding<span class="kw">&lt;/name&gt;</span>
+  <span class="kw">&lt;value&gt;</span>false<span class="kw">&lt;/value&gt;</span>
+  <span class="kw">&lt;description&gt;&lt;/description&gt;</span>
+<span class="kw">&lt;/property&gt;</span></code></pre>
+<h2 id="withZeppelin_deploy">Deploying libraries of NLP4L to Apache Zeppelin</h2>
+<p>Copy all JAR files but except zeppelin-interpreter-XXX.jar in the directory $NLP4L_HOME/target/pack/lib/ to the directory ~/work-zeppelin/incubator-zeppelin/interpreter/nlp4l/ .</p>
+<pre class="shell"><code>$ mkdir ~/work-zeppelin/incubator-zeppelin/interpreter/nlp4l
+$ cd $NLP4L_HOME
+$ cp target/pack/lib/*.jar ~/work-zeppelin/incubator-zeppelin/interpreter/nlp4l
+$ rm ~/work-zeppelin/incubator-zeppelin/interpreter/nlp4l/zeppelin-interpreter-*.jar</code></pre>
+<h2 id="withZeppelin_start">Starting Apache Zeppelin</h2>
+<p>Start Apache Zeppelin as follows.</p>
+<pre class="shell"><code>$ cd ~/work-zeppelin/incubator-zeppelin
+$ bin/zeppelin-daemon.sh start</code></pre>
+<p>It can be stopped as follows.</p>
+<pre class="shell"><code>$ bin/zeppelin-daemon.sh stop</code></pre>
+<p>However, let's go to the next step without stopping it now.</p>
+<h2 id="withZeppelin_save">Creating a note and saving NLP4LInterpreter</h2>
+<p>You can access to <a href="http://localhost:8080/" class="uri">http://localhost:8080/</a> from web browser. Click &quot;Create new note&quot; in Notebook menu to create a new note. You'll see the following on your screen, click Save button to save NLP4LInterpreter.</p>
+<figure>
+<img src="zeppelin-note-nlp4l-save.png" alt="Initial screen of Zeppelin Note" /><figcaption>Initial screen of Zeppelin Note</figcaption>
+</figure>
+<h2 id="withZeppelin_exec">Executing commands or programs of NLP4L</h2>
+<p>After saving the environment, you can execute commands and programs of NLP4L in a prompt of the Apache Zeppelin Notebook. To use NLP4LInterpreter, use %nlp4l directive. Click a play button (triangle button) to execute statements you entered.</p>
+<pre class="shell"><code>%nlp4l
+open(&quot;/tmp/index-ldcc&quot;)
+status
+Index /tmp/index-ldcc was opened.
+res0: org.nlp4l.core.RawReader = IndexReader(path=&#39;/tmp/index-ldcc&#39;,closed=false)
+
+========================================
+Index Path       : /tmp/index-ldcc
+Closed           : false
+Num of Fields    : 5
+Num of Docs      : 7367
+Num of Max Docs  : 7367
+Has Deletions    : false
+========================================
+        
+Fields Info:
+========================================
+  # | Name  | Num Terms 
+----------------------------------------
+  0 | body  |      64543
+  1 | url   |       7367
+  2 | date  |       6753
+  3 | title |      14205
+  4 | cat   |          9
+========================================</code></pre>
+<h2 id="withZeppelin_visualize">Visualising word counts</h2>
+<p>Using Zeppelin, let's visualize the result of word counts which we've got in <a href="#useNLP_wordcounts">Counting the Number of Words</a>. It's really simple because what you should do is to apply table() function.</p>
+<p>The following program will show you any 10 words which start with letter &quot;g&quot; and their counts in the articles of reuters corpus.</p>
+<pre class="sourceCode scala"><code class="sourceCode scala">%nlp4l
+
+<span class="kw">import</span> org.<span class="fu">nlp4l</span>.<span class="fu">core</span>.<span class="fu">_</span>
+<span class="kw">import</span> org.<span class="fu">nlp4l</span>.<span class="fu">core</span>.<span class="fu">analysis</span>.<span class="fu">_</span>
+<span class="kw">import</span> org.<span class="fu">nlp4l</span>.<span class="fu">stats</span>.<span class="fu">WordCounts</span>
+
+<span class="kw">val</span> index = <span class="st">&quot;/tmp/index-reuters&quot;</span>
+
+<span class="kw">val</span> reader = <span class="fu">RawReader</span>(index)
+
+<span class="kw">val</span> allDS = reader.<span class="fu">universalset</span>()
+<span class="kw">val</span> analyzer = <span class="fu">Analyzer</span>(<span class="kw">new</span> org.<span class="fu">apache</span>.<span class="fu">lucene</span>.<span class="fu">analysis</span>.<span class="fu">standard</span>.<span class="fu">StandardAnalyzer</span>(<span class="kw">null</span>.<span class="fu">asInstanceOf</span>[org.<span class="fu">apache</span>.<span class="fu">lucene</span>.<span class="fu">analysis</span>.<span class="fu">util</span>.<span class="fu">CharArraySet</span>]))
+<span class="kw">val</span> allMap = WordCounts.<span class="fu">count</span>(reader, <span class="st">&quot;body&quot;</span>, Set.<span class="fu">empty</span>, allDS, -<span class="dv">1</span>, analyzer)
+<span class="fu">table</span>(allMap.<span class="fu">filter</span>(_.<span class="fu">_1</span>.<span class="fu">startsWith</span>(<span class="st">&quot;g&quot;</span>)).<span class="fu">take</span>(<span class="dv">10</span>), <span class="st">&quot;word&quot;</span>, <span class="st">&quot;count&quot;</span>)</code></pre>
+<p>The bar chart looks like below (To see the bar chart, click the bar chart icon).</p>
+<figure>
+<img src="zeppelin-wordcounts.png" alt="words and their counts start with letter &quot;g&quot;" /><figcaption>words and their counts start with letter &quot;g&quot;</figcaption>
+</figure>
+<p>You can use either topTermsByDocFreq() or topTermsByTotalTermFreq() of RawReader class to visualize top terms in the specific field. Note that toArray should be added at the end of these functions as the type of the first argument of the function table() Array.</p>
+<pre class="sourceCode scala"><code class="sourceCode scala">%nlp4l
+<span class="fu">table</span>(reader.<span class="fu">topTermsByTotalTermFreq</span>(<span class="st">&quot;body&quot;</span>,<span class="dv">5</span>).<span class="fu">toArray</span>,<span class="st">&quot;word&quot;</span>,<span class="st">&quot;docFreq&quot;</span>,<span class="st">&quot;termFreq&quot;</span>)</code></pre>
+<p>The result you will get looks like the following (The appearance can be modified via SETTINGS menu.</p>
+<figure>
+<img src="zeppelin-topterms.png" alt="top terms" /><figcaption>top terms</figcaption>
+</figure>
 <h1 id="develop">Developing and Executing NLP4L Programs</h1>
 <h1 id="tm">Attribution</h1>
 </body>
