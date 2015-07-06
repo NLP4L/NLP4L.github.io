@@ -65,6 +65,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <li><a href="#withZeppelin_save">Creating a note and saving NLP4LInterpreter</a></li>
 <li><a href="#withZeppelin_exec">Executing commands or programs of NLP4L</a></li>
 <li><a href="#withZeppelin_visualize">Visualising word counts</a></li>
+<li><a href="#withZeppelin_zipfslaw">Visualizing Zipf's Law</a></li>
 </ul></li>
 <li><a href="#develop">Developing and Executing NLP4L Programs</a></li>
 <li><a href="#tm">Attribution</a></li>
@@ -611,6 +612,23 @@ Fields Info:
 <p>The result you will get looks like the following (The appearance can be modified via SETTINGS menu.</p>
 <figure>
 <img src="zeppelin-topterms.png" alt="top terms" /><figcaption>top terms</figcaption>
+</figure>
+<h2 id="withZeppelin_zipfslaw">Visualizing Zipf's Law</h2>
+<p>Let's visualize Zipf's Law using topTermsByTotalTermFreq() . Zipf's Law says that:</p>
+<blockquote>
+<p>If we count up how often each word (type) of a language occurs in a large corpus, and then list the words in order of their frequency of occurrence, we can explore the relationship between the frequency of a word f and its position in the list, known as its rank r. There is a constant k such that f * r = k</p>
+</blockquote>
+<p>The code snippet and the its chart are as follows.</p>
+<pre class="sourceCode scala"><code class="sourceCode scala">%nlp4l
+<span class="kw">val</span> index = <span class="st">&quot;/tmp/index-reuters&quot;</span>
+<span class="kw">val</span> reader = <span class="fu">RawReader</span>(index)
+
+<span class="kw">val</span> sum_words = reader.<span class="fu">sumTotalTermFreq</span>(<span class="st">&quot;body&quot;</span>)
+<span class="kw">val</span> tttf = reader.<span class="fu">topTermsByTotalTermFreq</span>(<span class="st">&quot;body&quot;</span>)
+<span class="kw">val</span> top = <span class="fu">tttf</span>(<span class="dv">0</span>).<span class="fu">_3</span>.<span class="fu">toFloat</span>
+<span class="fu">table</span>(tttf.<span class="fu">map</span>(a =&gt; (a.<span class="fu">_1</span>,top/a.<span class="fu">_3</span>.<span class="fu">toFloat</span>)).<span class="fu">toArray</span>,<span class="st">&quot;word&quot;</span>,<span class="st">&quot;N&quot;</span>)</code></pre>
+<figure>
+<img src="zeppelin_zipfslaw.png" alt="Zipf&#39;s Law on Reuters Collection" /><figcaption>Zipf's Law on Reuters Collection</figcaption>
 </figure>
 <h1 id="develop">Developing and Executing NLP4L Programs</h1>
 <h1 id="tm">Attribution</h1>

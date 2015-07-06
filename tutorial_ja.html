@@ -53,7 +53,6 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <li><a href="#useNLP_hmm">隠れマルコフモデル</a></li>
 <li><a href="#useNLP_collocanalysis">連語分析モデル</a></li>
 <li><a href="#useNLP_nee">固有表現抽出</a></li>
-<li><a href="#useNLP_zipfslaw">ジップの法則を確認する</a></li>
 <li><a href="#useNLP_hypothesistesting">仮説検定</a></li>
 <li><a href="#useNLP_correlationanalysis">相関分析</a></li>
 </ul></li>
@@ -91,6 +90,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <li><a href="#withZeppelin_save">ノートの作成と NLP4LInterpreter の保存</a></li>
 <li><a href="#withZeppelin_exec">NLP4L のコマンドやプログラムの実行</a></li>
 <li><a href="#withZeppelin_visualize">単語カウントの視覚化</a></li>
+<li><a href="#withZeppelin_zipfslaw">ジップの法則を確認する</a></li>
 </ul></li>
 <li><a href="#develop">NLP4Lプログラムを開発して実行する</a>
 <ul>
@@ -859,7 +859,6 @@ John Eustace (DF=1, Total TF=1)
 Mark Warburton (DF=1, Total TF=1)
 Mitch Lively (DF=1, Total TF=1)</code></pre>
 <p>結果は上のようになり、確かに人名が抽出されています。</p>
-<h2 id="useNLP_zipfslaw">ジップの法則を確認する</h2>
 <h2 id="useNLP_hypothesistesting">仮説検定</h2>
 <p>先行研究では非母語話者の書いた英語にはIやyouが多用されがちで、書き手・読み手の可視性が母語話者以上に顕著であるとされます（[1]の3章、[2]）。</p>
 <pre class="shell"><code>[2] Petch-Tyson, S. (1998). Writer/reader visibility in EFL written discourse. In S. Granger (Ed.), Learner English on Computer (pp. 107-118). London, UK: Longman.</code></pre>
@@ -1547,6 +1546,19 @@ Fields Info:
 <p>結果は次のようになります（SETTINGS の設定を変更して表示を変えられます）。</p>
 <figure>
 <img src="zeppelin-topterms.png" alt="出現頻度の大きい単語" /><figcaption>出現頻度の大きい単語</figcaption>
+</figure>
+<h2 id="withZeppelin_zipfslaw">ジップの法則を確認する</h2>
+<p>topTermsByTotalTermFreq() を使ってジップの法則を確認してみましょう。ジップの法則は、出現頻度が第N位の単語の出現確率は第1位の出現確率のk/Nになるというものです（kは定数）。プログラムは次のようになり、Zeppelinで視覚化すると、おおよそ成り立っていることがうかがえます。</p>
+<pre class="sourceCode scala"><code class="sourceCode scala">%nlp4l
+<span class="kw">val</span> index = <span class="st">&quot;/tmp/index-reuters&quot;</span>
+<span class="kw">val</span> reader = <span class="fu">RawReader</span>(index)
+
+<span class="kw">val</span> sum_words = reader.<span class="fu">sumTotalTermFreq</span>(<span class="st">&quot;body&quot;</span>)
+<span class="kw">val</span> tttf = reader.<span class="fu">topTermsByTotalTermFreq</span>(<span class="st">&quot;body&quot;</span>)
+<span class="kw">val</span> top = <span class="fu">tttf</span>(<span class="dv">0</span>).<span class="fu">_3</span>.<span class="fu">toFloat</span>
+<span class="fu">table</span>(tttf.<span class="fu">map</span>(a =&gt; (a.<span class="fu">_1</span>,top/a.<span class="fu">_3</span>.<span class="fu">toFloat</span>)).<span class="fu">toArray</span>,<span class="st">&quot;word&quot;</span>,<span class="st">&quot;N&quot;</span>)</code></pre>
+<figure>
+<img src="zeppelin_zipfslaw.png" alt="ロイターコレクションにおけるジップの法則" /><figcaption>ロイターコレクションにおけるジップの法則</figcaption>
 </figure>
 <h1 id="develop">NLP4Lプログラムを開発して実行する</h1>
 <h2 id="develop_repl">REPLから実行する</h2>
