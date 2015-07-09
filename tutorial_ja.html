@@ -53,6 +53,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <li><a href="#useNLP_hmm">隠れマルコフモデル</a></li>
 <li><a href="#useNLP_collocanalysis">連語分析モデル</a></li>
 <li><a href="#useNLP_nee">固有表現抽出</a></li>
+<li><a href="#useNLP_friend">フレンドワード抽出</a></li>
 <li><a href="#useNLP_hypothesistesting">仮説検定</a></li>
 <li><a href="#useNLP_correlationanalysis">相関分析</a></li>
 </ul></li>
@@ -859,6 +860,88 @@ John Eustace (DF=1, Total TF=1)
 Mark Warburton (DF=1, Total TF=1)
 Mitch Lively (DF=1, Total TF=1)</code></pre>
 <p>結果は上のようになり、確かに人名が抽出されています。</p>
+<h2 id="useNLP_friend">フレンドワード抽出</h2>
+<p>FriendWordsFinder を使うと、Lucene インデックス中のある単語と近くで共起する単語を抽出できます。便宜的に NLP4L ではそのような単語を「フレンドワード」と呼びます。基になったアイディは<a href="https://issues.apache.org/jira/browse/LUCENE-474">LUCENE-474</a>です。</p>
+<pre class="shell"><code>$ java -cp &quot;target/pack/lib/*&quot; org.nlp4l.colloc.FriendWordsFinder
+
+Usage:
+FriendWordsFinder
+       --index &lt;index dir&gt;
+       --field &lt;field name&gt;
+       [--srcField &lt;source field name&gt;]
+       [--text]                          specify this option when you want a text for output instead of index
+       [--maxDocsToAnalyze &lt;num&gt;]        default is 1000
+       [--slop &lt;num&gt;]                    default is 5
+       [--maxCoiTermsPerTerm &lt;num&gt;]      default is 20
+       [--maxBaseTermsPerDoc &lt;num&gt;]      default is 10000
+       out_index                         specify output index directory (or name of text file when you use --text)</code></pre>
+<p>最低限必要な設定は Lucene インデックスとフィールド名です。また、抽出結果は別の Lucene インデックス（デフォルト）またはテキストファイル（--text を指定した場合）に出力されます。</p>
+<p>たとえば、ブラウンコーパスの body フィールドにおけるフレンドワードを抽出して結果を out.txt ファイルに出力するには次のように実行します。</p>
+<pre class="shell"><code>$ java -cp &quot;target/pack/lib/*&quot; org.nlp4l.colloc.FriendWordsFinder --index /tmp/index-brown --field body --text out.txt</code></pre>
+<p>出力結果は次のようになります。</p>
+<pre class="shell"><code>$ head -n 30 out.txt 
+15th =&gt; 16th,poets
+16th =&gt; 15th,poets
+accustomed =&gt; artist,studying
+advances =&gt; quit
+adventure =&gt; sparkling,pair
+adventuring =&gt; masks,uncle
+ages =&gt; vaguely,wondered
+animal&#39;s =&gt; reconstruct,bone,artist
+ankle =&gt; bosom,calf,forgive,magnificent,artist,perfect
+antique =&gt; vieux,shops,orleans,impressed,uncle,store
+antiques =&gt; cavernous,cluttered,echoed,heels,depth
+appetite =&gt; tantalizing,calf,magnificent
+appraisingly =&gt; coldly,uncertain
+appreciates =&gt; joys,signs
+approached =&gt; cautiously,darkness
+arrangement =&gt; paint,quarter
+artist =&gt; animal&#39;s,ankle,accustomed,studying
+ashamed =&gt; smack,nephew
+aunt =&gt; subsequently,cheeks,mistaken,uncle,nearby,combination,december
+ball =&gt; masks,romance
+bear =&gt; encircled,crush
+bent =&gt; napped,kissed,pink
+bitch =&gt; timing,exclaimed,loyal,cheap
+blooming =&gt; everlastingly,plants,flowers
+bodied =&gt; sexy,wine,rare
+bolt =&gt; securely,slip
+bone =&gt; animal&#39;s,reconstruct,scientists
+bore =&gt; expectation,fun
+bosom =&gt; mind&#39;s,ankle,calf
+bride =&gt; indisposed,store</code></pre>
+<p>livedoor ニュースコーパスでは次のようになります。</p>
+<pre class="shell"><code>$ head -n 30 out.txt 
+250 =&gt; synth,セール,ミュージック,for,カテゴリ,ipad,限定,期間
+303 =&gt; synth,mi,for
+app =&gt; synth,itunes,apple,for,id,com,ipad,http
+apple =&gt; synth,itunes,app,store,com,http
+com =&gt; synth,itunes,app,apple,for,store,http
+for =&gt; synth,隣る,303,mt,250,app,id,com,ipad,限定,期間
+http =&gt; itunes,app,apple,store,com,以降
+id =&gt; synth,mt,app,for,ipad
+inc =&gt; ミュージック,カテゴリ,条件,バージョン
+ios =&gt; 互換,条件,ipad,以降
+ipad =&gt; シンセサイザーアプリ,オシレータ,synth,シンセサイザ,プリセット,セール,統合,互換,mt,250,app,for,背景,ios,本格,ボディ,id,条件,バージョン,以降
+itunes =&gt; app,apple,store,com,以降,http
+mi =&gt; シンセサイザーアプリ,シンセサイザ,303
+mt =&gt; synth,for,id,ipad
+store =&gt; itunes,apple,com,以降,http
+synth =&gt; シーケンサ,隣る,303,mt,250,app,apple,for,id,com,ipad,期間
+いじる =&gt; 個性,色々,見つける
+さっそく =&gt; シンセサイザーアプリ,シンセサイザ
+じれる =&gt; カットオフ,芸,個別,細かい
+ちょっとした =&gt; シーケンサ,隣る,芸,パターン,細かい
+ならでは =&gt; 強み,音
+まだまだ =&gt; 使いこなせる
+もう少し =&gt; やんちゃ,フィルタ,効く
+やんちゃ =&gt; フィルタ,もう少し,効く
+アクセント =&gt; ゲート,凝る,個別,タイム
+エンベロープ =&gt; パラメータ,フィルタ,贅沢,上手い,並ぶ,各,以外
+オシレータ =&gt; 波形,オーソドックス,プリセット,フィルタ,ipad
+オーソドックス =&gt; オシレータ,飛び道具,波形,プリセット
+カットオフ =&gt; じれる,芸,個別
+カテゴリ =&gt; セール,ミュージック,250,inc,限定,期間</code></pre>
 <h2 id="useNLP_hypothesistesting">仮説検定</h2>
 <p>先行研究では非母語話者の書いた英語にはIやyouが多用されがちで、書き手・読み手の可視性が母語話者以上に顕著であるとされます（[1]の3章、[2]）。</p>
 <pre class="shell"><code>[2] Petch-Tyson, S. (1998). Writer/reader visibility in EFL written discourse. In S. Granger (Ed.), Learner English on Computer (pp. 107-118). London, UK: Longman.</code></pre>
