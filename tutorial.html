@@ -50,6 +50,8 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <li><a href="#useNLP">Using as NLP Tool</a>
 <ul>
 <li><a href="#useNLP_wordcounts">Counting the Number of Words</a></li>
+<li><a href="#useNLP_hmm">Hidden Markov Model</a></li>
+<li><a href="#useNLP_collocanalysis">Collocational Analysis Model</a></li>
 </ul></li>
 <li><a href="#indexBrowser">Using Index Browser</a>
 <ul>
@@ -517,6 +519,225 @@ res25: Map[String,Long] = Map(war -&gt; 140, peace -&gt; 13)
 nlp4l&gt; // (12) Articles where places has a value japan but does not have a value usa will be the target. 
 nlp4l&gt; WordCounts.count(reader, &quot;body&quot;, Set(&quot;war&quot;, &quot;peace&quot;), jpDS.toSet &amp;~ usDS.toSet, -1, analyzer)
 res26: Map[String,Long] = Map(war -&gt; 16, peace -&gt; 1)</code></pre>
+<h2 id="useNLP_hmm">Hidden Markov Model</h2>
+<p>NLP4L provides the HmmModel class that you can use to learn Hidden Markov model from labeled training data. The both HmmModel and HmmModelIndexer refer to a Lucene index schema that is defined by the next HmmModelSchema.</p>
+<pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">trait</span> HmmModelSchema {
+ <span class="kw">def</span> <span class="fu">schema</span>(): Schema = {
+  <span class="kw">val</span> analyzer = <span class="fu">Analyzer</span>(<span class="kw">new</span> org.<span class="fu">apache</span>.<span class="fu">lucene</span>.<span class="fu">analysis</span>.<span class="fu">core</span>.<span class="fu">WhitespaceAnalyzer</span>)
+  <span class="kw">val</span> builder = <span class="fu">AnalyzerBuilder</span>()
+  builder.<span class="fu">withTokenizer</span>(<span class="st">&quot;whitespace&quot;</span>)
+  builder.<span class="fu">addTokenFilter</span>(<span class="st">&quot;shingle&quot;</span>, <span class="st">&quot;minShingleSize&quot;</span>, <span class="st">&quot;2&quot;</span>, <span class="st">&quot;maxShingleSize&quot;</span>, <span class="st">&quot;2&quot;</span>, <span class="st">&quot;outputUnigrams&quot;</span>, <span class="st">&quot;false&quot;</span>)
+  <span class="kw">val</span> analyzer2g = builder.<span class="fu">build</span>
+  <span class="kw">val</span> fieldTypes = Map(
+   <span class="st">&quot;begin&quot;</span> -&gt; <span class="fu">FieldType</span>(analyzer, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>),
+   <span class="st">&quot;class&quot;</span> -&gt; <span class="fu">FieldType</span>(analyzer, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>),
+   <span class="st">&quot;class_2g&quot;</span> -&gt; <span class="fu">FieldType</span>(analyzer2g, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>),
+   <span class="st">&quot;word_class&quot;</span> -&gt; <span class="fu">FieldType</span>(analyzer, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>),
+   <span class="st">&quot;word&quot;</span> -&gt; <span class="fu">FieldType</span>(analyzer, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>, <span class="kw">true</span>)
+  )
+  <span class="kw">val</span> analyzerDefault = analyzer
+  Schema(analyzerDefault, fieldTypes)
+ }
+}</code></pre>
+<p>The Hidden Markov model uses the probability of transition from one status (class) to another and the probability of symbol (word) output at one status. NLP4L uses a Lucene index that has a schema defined by HmmModelSchema to obtain these probabilities. The status transition probability uses the class frequencies of the class and the class_2g fields. The class_2g is a field that uses ShingleFilter of Lucene to store the 2-gram class. The class field, on the other hand, is a field that simply stores classes. Let's consider using these 2 fields to calculate the probability P( vb | nn ): that is the probability of a part of speech vb appears after a part of speech nn. This actually is extremely easy to do as you can use the previously described totalTermFreq(), which calculates the number of words, to calculate as follows.</p>
+<pre class="math"><code>P( vb | nn ) = &quot;nn vb&quot;.totalTermFreq() / &quot;nn&quot;.totalTermFreq()</code></pre>
+<p>A series of 2 classes such as &quot;nn vb&quot; refers to the class_2g field while &quot;nn&quot; refers to the class field. Similarly, the output probability of a word &quot;program&quot; in the class nn can be calculated as follows.</p>
+<pre class="math"><code>P( program | nn ) = &quot;program_nn&quot;.totalTermFreq() / &quot;nn&quot;.totalTermFreq()</code></pre>
+<p>Here, &quot;program_nn&quot; is a character string added in the Lucene index when a word &quot;program&quot; and a clas nn are observed at the same time. This is stored in the word_class field.</p>
+<p>The first class in the Lucene documents is stored in the begin field. You can calculate the initial status probability distribution of each class if you use the totalTermFreq() of this field.</p>
+<p>Let's look at specific examples of HmmModel usage.</p>
+<h3 id="part-of-speech-tagging">Part of Speech Tagging</h3>
+<p>One of the popular success examples of Hidden Markov model application is the part of speech tagging. Since the English sentences in the brown corpus are part of speech tagged, you can learn HmmModel from these and tag unknown English sentences with part of speeches. First, prepare brown corpus and run the sample script as follows.</p>
+<pre class="shell"><code>nlp4l&gt; :load examples/hmm_postagger.scala</code></pre>
+<p>The program, at the end, uses the Lucene index model, which has completed learning, to perform part of speech tagging on unknown English sentences. For example, performing part of speech tagging on an English sentence &quot;i like to go to france .&quot; will produce the following result.</p>
+<pre class="sourceCode scala"><code class="sourceCode scala">res8: Seq[org.<span class="fu">nlp4l</span>.<span class="fu">lm</span>.<span class="fu">Token</span>] = List(<span class="fu">Token</span>(i,ppss), <span class="fu">Token</span>(like,vb), <span class="fu">Token</span>(to,to), <span class="fu">Token</span>(go,vb), <span class="fu">Token</span>(to,in), <span class="fu">Token</span>(france,np), <span class="fu">Token</span>(.,.))</code></pre>
+<p>Let's look at the learning portion at the begenning of sample program.</p>
+<pre class="sourceCode scala"><code class="sourceCode scala"><span class="co">// (1)</span>
+<span class="kw">val</span> index = <span class="st">&quot;/tmp/index-brown-hmm&quot;</span>
+
+<span class="co">// (2)</span>
+<span class="kw">val</span> c: PathSet[Path] = <span class="fu">Path</span>(<span class="st">&quot;corpora&quot;</span>, <span class="st">&quot;brown&quot;</span>, <span class="st">&quot;brown&quot;</span>).<span class="fu">children</span>()
+
+<span class="co">// (3)</span>
+<span class="kw">val</span> indexer = <span class="fu">HmmModelIndexer</span>(index)
+c.<span class="fu">filter</span>{ e =&gt;
+ <span class="kw">val</span> s = e.<span class="fu">name</span>
+ <span class="kw">val</span> c = s.<span class="fu">charAt</span>(s.<span class="fu">length</span> - <span class="dv">1</span>)
+ c &gt;= &#39;<span class="dv">0</span>&#39; &amp;&amp; c &lt;= &#39;<span class="dv">9</span>&#39;
+}.<span class="fu">foreach</span>{ f =&gt;
+ <span class="kw">val</span> source = Source.<span class="fu">fromFile</span>(f.<span class="fu">path</span>, <span class="st">&quot;UTF-8&quot;</span>)
+ source.<span class="fu">getLines</span>().<span class="fu">map</span>(_.<span class="fu">trim</span>).<span class="fu">filter</span>(_.<span class="fu">length</span> &gt; <span class="dv">0</span>).<span class="fu">foreach</span> { g =&gt;
+  <span class="kw">val</span> pairs = g.<span class="fu">split</span>(<span class="st">&quot;</span><span class="ch">\\</span><span class="st">s+&quot;</span>)
+  <span class="kw">val</span> doc = pairs.<span class="fu">map</span>{h =&gt; h.<span class="fu">split</span>(<span class="st">&quot;/&quot;</span>)}.<span class="fu">filter</span>{_.<span class="fu">length</span>==<span class="dv">2</span>}.<span class="fu">map</span>{i =&gt; (<span class="fu">i</span>(<span class="dv">0</span>).<span class="fu">toLowerCase</span>(), <span class="fu">i</span>(<span class="dv">1</span>))}
+  indexer.<span class="fu">addDocument</span>(doc)
+ }
+}
+
+<span class="co">// (4)</span>
+indexer.<span class="fu">close</span>()
+
+<span class="co">// (5)</span>
+<span class="kw">val</span> model = <span class="fu">HmmModel</span>(index)</code></pre>
+<p>The program first specifies the Lucene index that the brown corpus is stored at (1). (2) specifies the directory for the brown corpus. This is referred to at (3) in order to get a file one at a time. The program then creates HmmModelIndexer at (3) and considers a line in a brown corpus file as one of Lucene documents and adds it to HmmModelIndexer using addDocument(). The format of documents that will be added is a double sequence of word and part of speech.</p>
+<p>Once a Lucene index is created, the program closes it at (4). The Hidden Markov model is calculated when HmmModel reads Lucene index, which was created like the above, at (5).</p>
+<p>Apply a model to HmmTagger as follows and call tokens() of HmmTagger when you use a model for English part of speech tagging.</p>
+<pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">val</span> tagger = <span class="fu">HmmTagger</span>(model)
+
+tagger.<span class="fu">tokens</span>(<span class="st">&quot;i like to go to france .&quot;</span>)
+tagger.<span class="fu">tokens</span>(<span class="st">&quot;you executed lucene program .&quot;</span>)
+tagger.<span class="fu">tokens</span>(<span class="st">&quot;nlp4l development members may be able to present better keywords .&quot;</span>)</code></pre>
+<p>The result of execution will be returned as follows in the form of a Token object list that has word and class (part of speech) as its elements.</p>
+<pre class="shell"><code>res23: Seq[org.nlp4l.lm.Token] = List(Token(i,ppss), Token(like,vb), Token(to,to), Token(go,vb), Token(to,in), Token(france,np), Token(.,.))
+res24: Seq[org.nlp4l.lm.Token] = List(Token(you,ppo-tl), Token(executed,vbn), Token(lucene,X), Token(program,nil), Token(.,.))
+res25: Seq[org.nlp4l.lm.Token] = List(Token(nlp4l,X), Token(development,nn), Token(members,nns), Token(may,md), Token(be,be), Token(able,jj), Token(to,to), Token(present,vb), Token(better,rbr), Token(keywords,X), Token(.,.-hl))</code></pre>
+<h3 id="estimating-english-words-from-katakana-words">Estimating English Words from Katakana Words</h3>
+<p>NLP4L includes training data that has pairs of Katakana words and their originating English words with original alignments added (train_data/alpha_katakana_aligned.txt).</p>
+<pre class="shell"><code>$ head train_data/alpha_katakana_aligned.txt 
+アaカcaデdeミーmy
+アaクcセceンnトt
+アaクcセceスss
+アaクcシciデdeンnトt
+アaクcロroバッbaトt
+アaクcショtioンn
+アaダdaプpターter
+アaフfリriカca
+エaアirバbuスs
+アaラlaスsカka</code></pre>
+<p>Let's think about learning Hidden Markov model, using this data and considering Katakana portion as words and alphabet portion as part of speeches. In this way, you will be able to predict English words from unknown Katakana words. This is implemented in examples/trans_katakana_alpha.scala.</p>
+<pre class="shell"><code>nlp4l&gt; :load examples/trans_katakana_alpha.scala</code></pre>
+<p>If you are interested, please figure this code out as this is practically the same as the previous examples/hmm_postagger.scala.</p>
+<p>The program at the end uses learned model to display the resulting English words that it estimated from unknown Katakana words.</p>
+<pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">val</span> tokenizer = <span class="fu">HmmTokenizer</span>(model)
+
+tokenizer.<span class="fu">tokens</span>(<span class="st">&quot;アクション&quot;</span>)
+tokenizer.<span class="fu">tokens</span>(<span class="st">&quot;プログラム&quot;</span>)
+tokenizer.<span class="fu">tokens</span>(<span class="st">&quot;ポイント&quot;</span>)
+tokenizer.<span class="fu">tokens</span>(<span class="st">&quot;テキスト&quot;</span>)
+tokenizer.<span class="fu">tokens</span>(<span class="st">&quot;コミュニケーション&quot;</span>)
+tokenizer.<span class="fu">tokens</span>(<span class="st">&quot;エントリー&quot;</span>)</code></pre>
+<p>This result of execution will look like as follows.</p>
+<pre class="shell"><code>res35: Seq[org.nlp4l.lm.Token] = List(Token(ア,a), Token(ク,c), Token(ショ,tio), Token(ン,n))
+res36: Seq[org.nlp4l.lm.Token] = List(Token(プ,p), Token(ロ,ro), Token(グ,g), Token(ラ,ra), Token(ム,m))
+res37: Seq[org.nlp4l.lm.Token] = List(Token(ポ,po), Token(イ,i), Token(ン,n), Token(ト,t))
+res38: Seq[org.nlp4l.lm.Token] = List(Token(テ,te), Token(キス,x), Token(ト,t))
+res39: Seq[org.nlp4l.lm.Token] = List(Token(コ,co), Token(ミュ,mmu), Token(ニ,ni), Token(ケー,ca), Token(ショ,tio), Token(ン,n))
+res40: Seq[org.nlp4l.lm.Token] = List(Token(エ,e), Token(ン,n), Token(ト,t), Token(リー,ree))</code></pre>
+<h3 id="useNLP_hmm_lw">Extracting Pairs of Katakana and English Words from Japanese wikipedia</h3>
+<p>The preceding examples/trans_katakana_alpha.scala is a program that takes Katakana words and outputs English words. The output English words, however, may be correct or incorrect as they purely are results of estimation. Therefore, they cannot be used in the synonym dictionary for Lucene/Solr as they are. However, when you take a considerable number of documents and extract pairs of Katakana words and alphabet character strings that appear within close range, these estimates could be used to see if each pair has the same meaning. It would be safe to consider that if an English word estimated from an obtained Katakana word is similar to an alphabet character string, the obtained Katakana word and the alphabet character string have the same meaning and can be used as an entry in the synonym dictionary.</p>
+<p>A Lucene index /tmp/index-jawiki, which was created from Japanese wikipedia by <a href="#getCorpora_wiki">Obtaining wikipedia Data and Creating an Index</a>, has a field ka_pair defined and this field contains pairs of Katakana words and alphabet character strings that appeared within close range. You will be able to extract pairs of Katakana words and their words origin - alphabet character strings - if you run the program LoanWordsExtractor with this field as a target.</p>
+<pre class="shell"><code>$ java -Dfile.encoding=UTF-8 -cp &quot;target/pack/lib/*&quot; org.nlp4l.syn.LoanWordsExtractor --index /tmp/index-jawiki --field ka_pair loanwords.txt</code></pre>
+<p>Also, run SynonymRecordsUnifier as follows because running this program only might result in some redundant lines.</p>
+<pre class="shell"><code>$ java -Dfile.encoding=UTF-8 -cp &quot;target/pack/lib/*&quot; org.nlp4l.syn.SynonymRecordsUnifier loanwords.txt</code></pre>
+<p>The ultimately obtained file loanwords.txt_checked can be used as the synonym dictionary for Lucene/Solr.</p>
+<h2 id="useNLP_collocanalysis">Collocational Analysis Model</h2>
+<p>NLP4L can look at a word in corpus and analyze the words before or after it with frequency of occurrence. NLP4L named this analysis data model &quot;collocational analysis model&quot; (CollocationalAnalysisModel). Using collocational analysis model will find out a verb and a preposition or other part of speeches that likely to appear with the verb. For example, English learners could obtain commonly used wordings if they use the collocational analysis model to check English corpus.</p>
+<p>Examples/colloc_analysis_brown.scala analyzes the brown corpus and displays words that likely to appear before or after word &quot;found&quot; in the order of appearance. The following is an easy-to-see table of examples/colloc_analysis_brown.scala output.</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">3rd Prev.</th>
+<th style="text-align: center;">2nd Prev.</th>
+<th style="text-align: center;">Previous</th>
+<th style="text-align: center;">Watched</th>
+<th style="text-align: center;">Following</th>
+<th style="text-align: center;">2nd Fol.</th>
+<th style="text-align: center;">3rd Fol.</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">the(36)</td>
+<td style="text-align: center;">to(26)</td>
+<td style="text-align: center;">be(60)</td>
+<td style="text-align: center;">found</td>
+<td style="text-align: center;">in(77)</td>
+<td style="text-align: center;">the(46)</td>
+<td style="text-align: center;">the(28)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">and(13)</td>
+<td style="text-align: center;">he(20)</td>
+<td style="text-align: center;">he(50)</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">a(43)</td>
+<td style="text-align: center;">in(24)</td>
+<td style="text-align: center;">to(19)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">a(12)</td>
+<td style="text-align: center;">the(17)</td>
+<td style="text-align: center;">was(32)</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">that(42)</td>
+<td style="text-align: center;">a(13)</td>
+<td style="text-align: center;">in(15)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">of(11)</td>
+<td style="text-align: center;">and(15)</td>
+<td style="text-align: center;">and(26)</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">the(38)</td>
+<td style="text-align: center;">be(13)</td>
+<td style="text-align: center;">of(13)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">is( 9)</td>
+<td style="text-align: center;">have(13)</td>
+<td style="text-align: center;">been(26)</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">it(28)</td>
+<td style="text-align: center;">to(12)</td>
+<td style="text-align: center;">and( 9)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">was( 8)</td>
+<td style="text-align: center;">can(10)</td>
+<td style="text-align: center;">i(26)</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">to(28)</td>
+<td style="text-align: center;">and(11)</td>
+<td style="text-align: center;">a( 8)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">he( 7)</td>
+<td style="text-align: center;">i(10)</td>
+<td style="text-align: center;">she(23)</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">himself(13)</td>
+<td style="text-align: center;">of(11)</td>
+<td style="text-align: center;">with( 8)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">in( 7)</td>
+<td style="text-align: center;">has( 9)</td>
+<td style="text-align: center;">have(22)</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">out(12)</td>
+<td style="text-align: center;">he( 7)</td>
+<td style="text-align: center;">had( 7)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">that( 7)</td>
+<td style="text-align: center;">of( 9)</td>
+<td style="text-align: center;">had(21)</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">him( 9)</td>
+<td style="text-align: center;">at( 6)</td>
+<td style="text-align: center;">be( 6)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">as( 5)</td>
+<td style="text-align: center;">could( 8)</td>
+<td style="text-align: center;">they(19)</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">myself( 9)</td>
+<td style="text-align: center;">had( 5)</td>
+<td style="text-align: center;">men( 4)</td>
+</tr>
+</tbody>
+</table>
+<p>You can see that there are a lot of phrases &quot;found in&quot; here. Also, as you can look at words before the closely watched word &quot;found&quot;, you can see that there are possibilities that phrases &quot;be found&quot;, &quot;to be found&quot;, and &quot;can be found&quot; are appearing as well.</p>
 <h1 id="indexBrowser">Using Index Browser</h1>
 <p>The interactive shell of NLP4L includes the CUI Lucene index browser. Using this index browser enables you to quickly browse/debug the information on fields and words in the Lucene index without writing a Java program.</p>
 <p>Now, let's browse inside of Livedoor news corpus that we created in the preceding section.</p>
