@@ -53,7 +53,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <li><a href="#useNLP_hmm">隠れマルコフモデル</a></li>
 <li><a href="#useNLP_collocanalysis">連語分析モデル</a></li>
 <li><a href="#useNLP_nee">固有表現抽出</a></li>
-<li><a href="#useNLP_friend">フレンドワード抽出</a></li>
+<li><a href="#useNLP_buddy">バディワード抽出</a></li>
 <li><a href="#useNLP_hypothesistesting">仮説検定</a></li>
 <li><a href="#useNLP_correlationanalysis">相関分析</a></li>
 </ul></li>
@@ -860,12 +860,12 @@ John Eustace (DF=1, Total TF=1)
 Mark Warburton (DF=1, Total TF=1)
 Mitch Lively (DF=1, Total TF=1)</code></pre>
 <p>結果は上のようになり、確かに人名が抽出されています。</p>
-<h2 id="useNLP_friend">フレンドワード抽出</h2>
-<p>FriendWordsFinder を使うと、Lucene インデックス中のある単語と近くで共起する単語を抽出できます。便宜的に NLP4L ではそのような単語を「フレンドワード」と呼びます。基になったアイディは<a href="https://issues.apache.org/jira/browse/LUCENE-474">LUCENE-474</a>です。</p>
-<pre class="shell"><code>$ java -cp &quot;target/pack/lib/*&quot; org.nlp4l.colloc.FriendWordsFinder
+<h2 id="useNLP_buddy">フレンドワード抽出</h2>
+<p>BuddyWordsFinder を使うと、Lucene インデックス中のある単語と近くで共起する単語を抽出できます。便宜的に NLP4L ではそのような単語を「フレンドワード」と呼びます。基になったアイディは<a href="https://issues.apache.org/jira/browse/LUCENE-474">LUCENE-474</a>です。</p>
+<pre class="shell"><code>$ java -cp &quot;target/pack/lib/*&quot; org.nlp4l.colloc.BuddyWordsFinder
 
 Usage:
-FriendWordsFinder
+BuddyWordsFinder
        --index &lt;index dir&gt;
        --field &lt;field name&gt;
        [--srcField &lt;source field name&gt;]
@@ -877,7 +877,7 @@ FriendWordsFinder
        out_index                         specify output index directory (or name of text file when you use --text)</code></pre>
 <p>最低限必要な設定は Lucene インデックスとフィールド名です。また、抽出結果は別の Lucene インデックス（デフォルト）またはテキストファイル（--text を指定した場合）に出力されます。</p>
 <p>たとえば、ブラウンコーパスの body フィールドにおけるフレンドワードを抽出して結果を out.txt ファイルに出力するには次のように実行します。</p>
-<pre class="shell"><code>$ java -cp &quot;target/pack/lib/*&quot; org.nlp4l.colloc.FriendWordsFinder --index /tmp/index-brown --field body --text out.txt</code></pre>
+<pre class="shell"><code>$ java -cp &quot;target/pack/lib/*&quot; org.nlp4l.colloc.BuddyWordsFinder --index /tmp/index-brown --field body --text out.txt</code></pre>
 <p>出力結果は次のようになります。</p>
 <pre class="shell"><code>$ head -n 30 out.txt 
 15th =&gt; 16th,poets
