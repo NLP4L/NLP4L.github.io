@@ -54,6 +54,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <li><a href="#useNLP_collocanalysis">連語分析モデル</a></li>
 <li><a href="#useNLP_nee">固有表現抽出</a></li>
 <li><a href="#useNLP_buddy">バディワード抽出</a></li>
+<li><a href="#useNLP_te">専門用語抽出</a></li>
 <li><a href="#useNLP_hypothesistesting">仮説検定</a></li>
 <li><a href="#useNLP_correlationanalysis">相関分析</a></li>
 </ul></li>
@@ -861,7 +862,7 @@ Mark Warburton (DF=1, Total TF=1)
 Mitch Lively (DF=1, Total TF=1)</code></pre>
 <p>結果は上のようになり、確かに人名が抽出されています。</p>
 <h2 id="useNLP_buddy">バディワード抽出</h2>
-<p>BuddyWordsFinder を使うと、Lucene インデックス中のある単語と近くで共起する単語を抽出できます。便宜的に NLP4L ではそのような単語を「バディワード」と呼びます。基になったアイディは<a href="https://issues.apache.org/jira/browse/LUCENE-474">LUCENE-474</a>です。</p>
+<p>BuddyWordsFinder を使うと、Lucene インデックス中のある単語と近くで共起する単語を抽出できます。便宜的に NLP4L ではそのような単語を「バディワード」と呼びます。基になったアイディアは<a href="https://issues.apache.org/jira/browse/LUCENE-474">LUCENE-474</a>です。</p>
 <pre class="shell"><code>$ java -cp &quot;target/pack/lib/*&quot; org.nlp4l.colloc.BuddyWordsFinder
 
 Usage:
@@ -942,6 +943,52 @@ synth =&gt; シーケンサ,隣る,303,mt,250,app,apple,for,id,com,ipad,期間
 オーソドックス =&gt; オシレータ,飛び道具,波形,プリセット
 カットオフ =&gt; じれる,芸,個別
 カテゴリ =&gt; セール,ミュージック,250,inc,限定,期間</code></pre>
+<h2 id="useNLP_te">専門用語抽出</h2>
+<p>Lucene インデックスから専門用語を抽出するツール TermsExtractor を紹介します。TermsExtractor の実装は論文「<a href="http://www.r.dl.itc.u-tokyo.ac.jp/~nakagawa/academic-res/jnlp10-1.pdf">出現頻度と連接頻度に基づく専門用語抽出</a>」に基づいて行われています。</p>
+<p>専門用語とは、ある文書に頻出する1つ以上の単語の連なりです。品詞情報まで参照するため、現在は JapaneseTokenizer が使える日本語のみ対応しています。</p>
+<p>TermsExtractor を実行するには、専門用語を抽出したい文書（のフィールド）を Luceneインデックスに登録する必要があります。またそのLuceneフィールドは、CompoundNounCnAnalyzer、CompoundNounRn2Analyzer、CompoundNounLn2Analyzerという3つのLucene Analyzerでトークナイズされている必要があります。</p>
+<p>サンプルとして、livedoor ニュースコーパスの sports-watch カテゴリの文書から専門用語抽出をしてみましょう。examples/index_ldcc_sports-watch.scala を次のように実行します。</p>
+<pre class="shell"><code>nlp4l&gt; :load examples/index_ldcc_sports-watch.scala</code></pre>
+<p>すると、/tmp/index-ldcc-sports-watch という Luceneインデックスができます。このインデックスをインデックスブラウザで見てみると、body というフィールド以外に body_rn2 と body_ln2 というフィールドができていることがわかるでしょう。これらのフィールドはそれぞれ CompoundNounCnAnalyzer、CompoundNounRn2Analyzer、CompoundNounLn2Analyzer によってトークナイズされています。</p>
+<pre class="shell"><code>nlp4l&gt; open(&quot;/tmp/index-ldcc-sports-watch&quot;)
+
+nlp4l&gt; status
+
+========================================
+Index Path       : /tmp/index-ldcc-sports-watch
+Closed           : false
+Num of Fields    : 7
+Num of Docs      : 900
+Num of Max Docs  : 900
+Has Deletions    : false
+========================================
+        
+Fields Info:
+========================================
+  # | Name     | Num Terms 
+----------------------------------------
+  0 | body_ln2 |      28032
+  1 | body     |      25249
+  2 | url      |        900
+  3 | date     |        898
+  4 | title    |       2968
+  5 | cat      |          1
+  6 | body_rn2 |      28032
+========================================</code></pre>
+<p>このインデックス /tmp/index-ldcc-sports-watch とフィールド body を対象に、TermsExtractor で専門用語抽出するには、次のように実行します。</p>
+<pre class="shell"><code>$ java -cp &quot;target/pack/lib/*&quot; org.nlp4l.extract.TermsExtractor --field body --out terms.txt /tmp/index-ldcc-sports-watch</code></pre>
+<p>出現頻度と連接頻度に基づくスコア計算がなされ、スコアの高い順にソートされて結果が--out オプションで指定したテキストファイル terms.txt に出力されます。</p>
+<pre class="shell"><code>$ head terms.txt
+日本, 130058.945313
+選手, 86330.593750
+日本代表, 58211.601563
+試合, 55407.371094
+放送, 55291.871094
+一人, 38042.597656
+一戦, 26854.021484
+番組, 24922.732422
+監督, 23383.238281
+チーム, 21691.521484</code></pre>
 <h2 id="useNLP_hypothesistesting">仮説検定</h2>
 <p>先行研究では非母語話者の書いた英語にはIやyouが多用されがちで、書き手・読み手の可視性が母語話者以上に顕著であるとされます（[1]の3章、[2]）。</p>
 <pre class="shell"><code>[2] Petch-Tyson, S. (1998). Writer/reader visibility in EFL written discourse. In S. Granger (Ed.), Learner English on Computer (pp. 107-118). London, UK: Longman.</code></pre>
