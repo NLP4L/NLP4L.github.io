@@ -765,6 +765,114 @@ res40: Seq[org.nlp4l.lm.Token] = List(Token(エ,e), Token(ン,n), Token(ト,t), 
 </tbody>
 </table>
 <p>&quot;found in&quot; というフレーズが多く発生していることがわかります。また、注目している単語 &quot;found&quot; の前の単語もわかるので、&quot;be found&quot; や &quot;to be found&quot;, &quot;can be found&quot; といったフレーズも発生している可能性がうかがえます。</p>
+<p>次の例はlivedoorニュースコーパスのうち、「ITライフハック」という記事カテゴリを用いて「高」という単語について連語分析を行った結果です。</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">3単語前</th>
+<th style="text-align: center;">2単語前</th>
+<th style="text-align: center;">1単語前</th>
+<th style="text-align: center;">注目している単語</th>
+<th style="text-align: center;">1単語後</th>
+<th style="text-align: center;">2単語後</th>
+<th style="text-align: center;">3単語後</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">の(17)</td>
+<td style="text-align: center;">で(11)</td>
+<td style="text-align: center;">の(54)</td>
+<td style="text-align: center;">高</td>
+<td style="text-align: center;">さ(66)</td>
+<td style="text-align: center;">な(36)</td>
+<td style="text-align: center;">の(16)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">を(10)</td>
+<td style="text-align: center;">できる( 9)</td>
+<td style="text-align: center;">は(25)</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">解像度(51)</td>
+<td style="text-align: center;">の(27)</td>
+<td style="text-align: center;">を(16)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">に( 9)</td>
+<td style="text-align: center;">に( 9)</td>
+<td style="text-align: center;">で(16)</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">精細(32)</td>
+<td style="text-align: center;">mm(21)</td>
+<td style="text-align: center;">が(13)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">充電( 8)</td>
+<td style="text-align: center;">可能( 9)</td>
+<td style="text-align: center;">だ(12)</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">機能(30)</td>
+<td style="text-align: center;">で(18)</td>
+<td style="text-align: center;">バッテリー( 8)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">mm( 7)</td>
+<td style="text-align: center;">奥行き( 9)</td>
+<td style="text-align: center;">な(12)</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">品質(19)</td>
+<td style="text-align: center;">を(17)</td>
+<td style="text-align: center;">重量( 8)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">も( 7)</td>
+<td style="text-align: center;">mm( 7)</td>
+<td style="text-align: center;">に(11)</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">容量(12)</td>
+<td style="text-align: center;">が(16)</td>
+<td style="text-align: center;">上げる( 7)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">対応( 7)</td>
+<td style="text-align: center;">が( 7)</td>
+<td style="text-align: center;">も(10)</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">音質(10)</td>
+<td style="text-align: center;">化(13)</td>
+<td style="text-align: center;">重( 7)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">た( 6)</td>
+<td style="text-align: center;">し( 7)</td>
+<td style="text-align: center;">万能( 8)</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">高性能( 9)</td>
+<td style="text-align: center;">ディスプレイ(12)</td>
+<td style="text-align: center;">に( 6)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">奥行き( 6)</td>
+<td style="text-align: center;">て( 6)</td>
+<td style="text-align: center;">が( 6)</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">コスト( 8)</td>
+<td style="text-align: center;">性能(12)</td>
+<td style="text-align: center;">し( 5)</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4( 5)</td>
+<td style="text-align: center;">の( 6)</td>
+<td style="text-align: center;">を( 6)</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">収益( 7)</td>
+<td style="text-align: center;">に( 8)</td>
+<td style="text-align: center;">パフォーマンス( 5)</td>
+</tr>
+</tbody>
+</table>
+<p>「ITライフハック」というカテゴリらしく、「高さ」という一般的な単語に次いで、「高解像度」「高精細」「高機能」などが頻出していることがうかがえます。</p>
+<p>なおこの結果は、examples/colloc_analysis_ldcc.scala というサンプルスクリプトを実行すると得られます。</p>
 <h2 id="useNLP_nee">固有表現抽出</h2>
 <p>NLP4Lは他のNLPツールの固有表現抽出機能と連携するためのクラスを提供しています。これを使うと、Luceneインデックス作成時にあるフィールドの文章から固有表現を抽出して他のフィールドにコピーすることができます。これにより、検索のための新しい絞り込み軸を提供することができます。</p>
 <p>NLP4Lは現在、Apache OpenNLPと連携して固有表現抽出を行うOpenNLPExtractorクラスを提供しています。</p>
