@@ -912,6 +912,93 @@ Top 10 frequent terms for field title
 <h1 id="dearESUsers">To Elasticsearch Users</h1>
 <h1 id="useWithMahout">Working with Mahout</h1>
 <h1 id="useWithSpark">Working with Spark</h1>
+<p>Through this section, Spark 1.3.0 or later must be installed beforehand. (Adjust to your version to read through if you have the version 1.3.0 or earlier installed.)</p>
+<h2 id="useWithSpark_mllib">Linking with MLLib</h2>
+<p>With NLP4L, you can extract the feature value of corpus and give it to Spark MLlib as its input.</p>
+<h3 id="useWithSpark_svm">Document classification with the support vector machine</h3>
+<p>Although spark MLlib provides several classifiers, we will introduce you how to perform document classification on livedoor news corpus (ldcc) using the support vector machine (SVM).</p>
+<p>Run examples/index_ldcc.scala, if you have not run it yet, in order to prepare the ldcc corpus in the Lucene index. Then, use examples/extract_ldcc.scala to extract only the articles that have 2 categories - &quot;dokujo-tsushin&quot; and &quot;sports-watch&quot; from Lucene index - and create another Lucene index called &quot;/tmp/index-ldcc-part&quot;.</p>
+<pre class="shell"><code>nlp4l&gt; :load examples/extract_ldcc.scala</code></pre>
+<p>Then, run a command line program LabeledPointAdapter as follows and output vector data of all documents in the 2 classes from /tmp/index-ldcc-part.</p>
+<pre class="shell"><code>$ java -Dfile.encoding=UTF-8 -cp &quot;target/pack/lib/*&quot; org.nlp4l.spark.mllib.LabeledPointAdapter -s examples/schema/ldcc.conf -f body -l cat /tmp/index-ldcc-part</code></pre>
+<p>Here, you specify the schema definition file name as the -s option, feature vector extract target field name as the -f option, and the field name that has labels written as the -l option. The result of execution will be output to the labeled-point-out/ directory. The labeled-point-out/data.txt file is a libsvm format file that can be an input to Spark MLlib. The first column is a numeric values label while the second and the following columns are feature vectors. The correspondence relation between the numeric value labels and the actual label name is output to the labeled-point-out/label.txt file.</p>
+<pre class="shell"><code>$ cat labeled-point-out/label.txt
+dokujo-tsushin  0
+sports-watch    1</code></pre>
+<p>Let's run Spark MLlib SVM now. Start spark-shell and run the following program.</p>
+<pre class="sourceCode scala"><code class="sourceCode scala"><span class="kw">import</span> org.<span class="fu">apache</span>.<span class="fu">spark</span>.<span class="fu">SparkContext</span>
+<span class="kw">import</span> org.<span class="fu">apache</span>.<span class="fu">spark</span>.<span class="fu">mllib</span>.<span class="fu">classification</span>.{SVMModel, SVMWithSGD}
+<span class="kw">import</span> org.<span class="fu">apache</span>.<span class="fu">spark</span>.<span class="fu">mllib</span>.<span class="fu">evaluation</span>.<span class="fu">BinaryClassificationMetrics</span>
+<span class="kw">import</span> org.<span class="fu">apache</span>.<span class="fu">spark</span>.<span class="fu">mllib</span>.<span class="fu">regression</span>.<span class="fu">LabeledPoint</span>
+<span class="kw">import</span> org.<span class="fu">apache</span>.<span class="fu">spark</span>.<span class="fu">mllib</span>.<span class="fu">linalg</span>.<span class="fu">Vectors</span>
+<span class="kw">import</span> org.<span class="fu">apache</span>.<span class="fu">spark</span>.<span class="fu">mllib</span>.<span class="fu">util</span>.<span class="fu">MLUtils</span>
+
+<span class="co">// Load training data in LIBSVM format.</span>
+<span class="kw">val</span> data = MLUtils.<span class="fu">loadLibSVMFile</span>(sc, <span class="st">&quot;labeled-point-out/data.txt&quot;</span>)
+
+<span class="co">// Split data into training (70%) and test (30%).</span>
+<span class="kw">val</span> splits = data.<span class="fu">randomSplit</span>(Array(<span class="fl">0.7</span>, <span class="fl">0.3</span>), seed = 11L)
+<span class="kw">val</span> training = <span class="fu">splits</span>(<span class="dv">0</span>).<span class="fu">cache</span>()
+<span class="kw">val</span> test = <span class="fu">splits</span>(<span class="dv">1</span>)
+
+<span class="co">// Run training algorithm to build the model</span>
+<span class="kw">val</span> numIterations = <span class="dv">100</span>
+<span class="kw">val</span> model = SVMWithSGD.<span class="fu">train</span>(training, numIterations)
+
+<span class="co">// Clear the default threshold.</span>
+model.<span class="fu">clearThreshold</span>()
+
+<span class="co">// Compute raw scores on the test set.</span>
+<span class="kw">val</span> scoreAndLabels = test.<span class="fu">map</span> { point =&gt;
+  <span class="kw">val</span> score = model.<span class="fu">predict</span>(point.<span class="fu">features</span>)
+  (score, point.<span class="fu">label</span>)
+}
+
+<span class="co">// Get evaluation metrics.</span>
+<span class="kw">val</span> metrics = <span class="kw">new</span> <span class="fu">BinaryClassificationMetrics</span>(scoreAndLabels)
+<span class="kw">val</span> auROC = metrics.<span class="fu">areaUnderROC</span>()
+
+<span class="fu">println</span>(<span class="st">&quot;Area under ROC = &quot;</span> + auROC)</code></pre>
+<p>The result of execution will be display as follows. Area under ROC is displayed as 0.9989017178259646.</p>
+<pre class="sourceCode scala"><code class="sourceCode scala">Area under ROC = <span class="fl">0.9989017178259646</span></code></pre>
+<h3 id="clustering">Clustering</h3>
+<p>Several clustering algorithms (k-means, Gaussian mixture and etc.) are implemented in Spark MLlib. Among them, we will show you an example that uses LDA (Latent Dirichlet allocation). Refer to <a href="http://spark.apache.org/docs/1.3.0/mllib-clustering.html">Official Reference (v1.3.0)</a> for the details of clustering algorithms that are implemented in Spark MLlib.</p>
+<p>Side Note: LDA has been imported from Spark 1.3.0.</p>
+<p>Run the program VectorsAdapter from the command line (Run examples/index_ldcc.scala to have the livedoor news corpus indexed beforehand).</p>
+<pre><code>$ java -Dfile.encoding=UTF-8 -cp &quot;target/pack/lib/*&quot; org.nlp4l.spark.mllib.VectorsAdapter -s examples/schema/ldcc.conf -f body --idfmode n --type int /tmp/index-ldcc</code></pre>
+<p>When you run the program, the following 2 files are created in the vectors-out directory.</p>
+<ul>
+<li>data.txt // A data file (comma-delimited CSV format). The first line is the header( word ID) and the first columns of each line is the document IDs.</li>
+<li>words.txt // A list of word ID and word pairs.</li>
+</ul>
+<p>Run LDA with Spark when you have extracted the feature value. Start spark-shell and input as follows.</p>
+<pre class="shell"><code>$ spark-shell
+
+scala&gt; import org.apache.spark.mllib.clustering.LDA
+scala&gt; import org.apache.spark.mllib.linalg.Vectors
+// Provide data.txt as the input.
+scala&gt; val data = sc.textFile(&quot;/path/to/vectors-out/data.txt&quot;)
+scala&gt; val parsedData = data.map(s =&gt; Vectors.dense(s.trim.split(&#39; &#39;).map(_.toDouble)))
+scala&gt; val corpus = parsedData.zipWithIndex.map(_.swap).cache()
+// Specify K=5 to create a model.
+scala&gt; val ldaModel = new LDA().setK(5).run(corpus)
+
+// Obtain an estimated topic. A topic is expressed as occurrence probability distribution of each word.
+scala&gt; val topics = ldaModel.topicsMatrix
+6.582992067532604g0.12712473287343715 2.0749605231892994 ... (5 total)
+1.7458039064383513 0.00886714658883468 4.228671695274331  ...
+0.993056435220057  4.64132780991838  0.18921245384121668 ...
+...
+
+// Obtain the probability distribution of each document belonging to a certain topic.
+scala&gt; val topics = ldaModel.topicDistributions
+scala&gt; topics.take(5).foreach(println)
+(384,[0.13084037186524378,0.02145904901484863,0.30073967633170434,0.18175275728283377,0.36520814550536945])
+(204,[0.5601036760461913,0.04276689792374281,0.17626863743620377,0.06992184061352519,0.15093894798033694])
+(140,[0.01548241660044312,0.8975654153324738,0.013671563672420709,0.061526631681883964,0.011753972712778454])
+(466,[0.052798328682649866,0.04602366817727088,0.7138181945792464,0.03541828992076265,0.1519415186400702])
+(160,[0.20118704750574637,0.12811775189441738,0.23204896620959134,0.1428791353110324,0.29576709907921245])</code></pre>
+<p>Refer to the Spark API documents for the detailed information on how to use Spark MLlib.</p>
 <h1 id="useLucene">Using Lucene</h1>
 <h1 id="withZeppelin">Using NLP4L from Apache Zeppelin</h1>
 <p>We will discuss how to use NLP4L from Apache Zeppelin.</p>
